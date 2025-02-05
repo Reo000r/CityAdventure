@@ -1,23 +1,52 @@
 #pragma once
 #include "Scene.h"
 #include "Vector2.h"
+#include "Game.h"
 
-namespace
+#include <memory>
+
+class CursorUI;
+
+namespace TitleSceneData
 {
 	constexpr int kBackgroundGraphOffsetX =    0;
 	constexpr int kBackgroundGraphOffsetY = -140;
 
 	constexpr int kTitleGraphOffsetX = -70;
-	constexpr int kTitleGraphOffsetY =   0; // -90
+	constexpr int kTitleGraphOffsetY = -90; // -90
+
+	// 
+	constexpr int kTitleFadeFrame = static_cast<int>(Game::kFadeInterval * 1.5);
+
+	// カーソルの起点位置
+	// 文字表示の基準でもある
+	constexpr int kStartCursorPosX = -256;
+	constexpr int kStartCursorPosY = 570;
+
+	const Vector2 kStartCursorPos = { kStartCursorPosX, kStartCursorPosY };
+
+	constexpr int kAddCursorPosX = 0;
+	constexpr int kAddCursorPosY = 0;
+
+	const Vector2 kAddCursorPos = { kAddCursorPosX, kAddCursorPosY };
 }
 
 class TitleScene : public Scene
 {
 private:
 	int _frame;
-	int _graphHandle;
+	int _titleFadeFrameCount;
 	int _titleGraphHandle;
 	int _backgroundGraphHandle;
+	int _startHighlightStringGraphHandle;
+
+	int _cursorUndecisionHandle;
+	int _cursorDecisionHandle;
+	int _cursorEffectHandle;
+
+	bool _startTitleAnim;
+
+	std::shared_ptr<CursorUI> _cursor;
 
 	// _updateや_drawが変数であることを分かりやすくしている
 	using UpdateFunc_t = void (TitleScene::*)();

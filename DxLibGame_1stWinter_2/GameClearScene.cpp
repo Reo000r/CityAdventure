@@ -1,7 +1,9 @@
 #include "GameClearScene.h"
 #include "TitleScene.h"  // 遷移先のシーン
+#include "GamePlayScene.h"  // 遷移先のシーン
 #include "Scene.h"
 #include "SceneController.h"
+#include "CursorUI.h"
 
 #include "Input.h"
 #include "Game.h"
@@ -22,11 +24,21 @@ void GameClearScene::FadeinUpdate()
 
 void GameClearScene::NormalUpdate()
 {
-	if (Input::GetInstance().IsTrigger(PAD_INPUT_1))
+	_cursor->Update();
+
+	if (_cursor->GetDecisionFrame() >= 60)
 	{
 		_nowUpdateState = &GameClearScene::FadeoutUpdate;
 		_nowDrawState = &GameClearScene::FadeDraw;
 		_frame = 0;
+	}
+
+	// 押されたらエフェクトを動かす
+	// (雑)
+	if (_cursor->GetDecisionFrame())
+	{
+		Vector2 vel = { 7.0f, 0.0f };
+		_cursor->SetEffectVel(vel);
 	}
 }
 
@@ -35,16 +47,39 @@ void GameClearScene::FadeoutUpdate()
 	_frame++;
 	if (_frame >= Game::kFadeInterval)
 	{
-		SceneController::GetInstance().ChangeScene(std::make_shared<TitleScene>());
-		return;  // 自分が死んでいるのでもし
-		// 余計な処理が入っているとまずいのでreturn;
+		// 0(上)だった場合
+		if (!_cursor->GetCurrentPosition())
+		{
+			SceneController::GetInstance().ChangeScene(std::make_shared<GamePlayScene>());
+			return;  // 自分が死んでいるのでもし
+			// 余計な処理が入っているとまずいのでreturn;
+		}
+		else // 1(下)だった場合
+		{
+			SceneController::GetInstance().ChangeScene(std::make_shared<TitleScene>());
+			return;  // 自分が死んでいるのでもし
+			// 余計な処理が入っているとまずいのでreturn;
+		}
 	}
 }
 
 void GameClearScene::FadeDraw()
 {
 	// 背景の表示
-	DrawRotaGraph(static_cast<int>(Game::kScreenCenterWidth), static_cast<int>(Game::kScreenCenterHeight), 1.0, 0.0f, _graphHandle, true);
+	//float a = 0.6f;
+	//SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(255 * a));
+	DrawGraph(0, -140, _backgroundGraphHandle, false);
+	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	_cursor->Draw();
+
+	// 文字列表示
+	DrawRotaGraph(Game::kScreenCenterWidth + 20, Game::kScreenCenterHeight - 100,
+		1.5, 0.0f, _clearStringGraphHandle, true);
+	DrawRotaGraph(Game::kScreenCenterWidth, Game::kScreenCenterHeight + 100,
+		0.5, 0.0f, _continueHighlightStringGraphHandle, true);
+	DrawRotaGraph(Game::kScreenCenterWidth, Game::kScreenCenterHeight + 200,
+		0.5, 0.0f, _titleStringGraphHandle, true);
 
 	// フェードイン/アウトの処理
 	// フェード割合の計算(0.0-1.0)
@@ -57,23 +92,64 @@ void GameClearScene::FadeDraw()
 
 void GameClearScene::NormalDraw()
 {
-	DrawRotaGraph(static_cast<int>(Game::kScreenCenterWidth), static_cast<int>(Game::kScreenCenterHeight), 1.0, 0.0f, _graphHandle, true);
+	//float a = 0.6f;
+	//SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(255 * a));
+	DrawGraph(0, -140, _backgroundGraphHandle, false);
+	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	_cursor->Draw();
+	
+	// 文字列表示
+	DrawRotaGraph(Game::kScreenCenterWidth + 20, Game::kScreenCenterHeight - 100, 
+		1.5, 0.0f, _clearStringGraphHandle, true);
+	DrawRotaGraph(Game::kScreenCenterWidth, Game::kScreenCenterHeight + 100, 
+		0.5, 0.0f, _continueHighlightStringGraphHandle, true);
+	DrawRotaGraph(Game::kScreenCenterWidth, Game::kScreenCenterHeight + 200, 
+		0.5, 0.0f, _titleStringGraphHandle, true);
+
+	//DrawFormatString(0, 0, 0xffffff, L"GameClear Scene");
+#ifdef _DEBUG
 	DrawFormatString(0, 0, 0xffffff, L"GameClear Scene");
+#endif
 }
 
 GameClearScene::GameClearScene() :
 	_frame(Game::kFadeInterval),
-	_graphHandle(0),
+	_backgroundGraphHandle(0),
+	_clearStringGraphHandle(0),
+	_cursor(std::make_shared<CursorUI>()),
 	_nowUpdateState(&GameClearScene::FadeinUpdate),
 	_nowDrawState(&GameClearScene::FadeDraw)
 {
-	_graphHandle = LoadGraph(L"data/img/player/2/Player2_Idle.png");
-	assert(_graphHandle >= 0);
+	_backgroundGraphHandle = LoadGraph(L"data/img/background/Background.png");
+	assert(_backgroundGraphHandle >= 0);
+	_clearStringGraphHandle = LoadGraph(L"data/img/string/GameClear.png");
+	assert(_clearStringGraphHandle >= 0);
+	_continueHighlightStringGraphHandle = LoadGraph(L"data/img/string/Continue_Highlight.png");
+	assert(_continueHighlightStringGraphHandle >= 0);
+	_titleStringGraphHandle = LoadGraph(L"data/img/string/Title.png");
+	assert(_titleStringGraphHandle >= 0);
+	_cursorUndecisionHandle = LoadGraph(L"data/img/player/clear/ClearPlayer_Idle.png");
+	assert(_cursorUndecisionHandle >= 0);
+	_cursorDecisionHandle = LoadGraph(L"data/img/player/clear/ClearPlayer_Run.png");
+	assert(_cursorDecisionHandle >= 0);
+	_cursorEffectHandle = LoadGraph(L"data/img/player/clear/ClearPlayer_Bullet.png");
+	assert(_cursorEffectHandle >= 0);
+
+	Vector2 pos    = GameclearSceneData::kStartCursorPos;
+	Vector2 addPos = GameclearSceneData::kAddCursorPos;
+	_cursor->Init(pos, addPos, 3.0f, 3.0f, _cursorUndecisionHandle, _cursorDecisionHandle, _cursorEffectHandle, true);
 }
 
 GameClearScene::~GameClearScene()
 {
-	DeleteGraph(_graphHandle);
+	DeleteGraph(_backgroundGraphHandle);
+	DeleteGraph(_clearStringGraphHandle);
+	DeleteGraph(_continueHighlightStringGraphHandle);
+	DeleteGraph(_titleStringGraphHandle);
+	DeleteGraph(_cursorUndecisionHandle);
+	DeleteGraph(_cursorDecisionHandle);
+	DeleteGraph(_cursorEffectHandle);
 }
 
 void GameClearScene::Update()

@@ -3,6 +3,8 @@
 #include "Game.h"
 #include "GameSceneCamera.h"
 
+#include <memory>
+
 // 元はColliderクラスを継承していたが、
 // CircleColliderの実装予定が無くなったので
 // Colliderに持たせていたものを直接持つようになった
@@ -26,6 +28,12 @@ protected:
 	bool _isHitFrame;
 
 public:
+	/// <summary>
+	/// コンストラクタ
+	/// </summary>
+	/// <param name="pos">中心位置</param>
+	/// <param name="offset">当たり判定作成時の位置補正値</param>
+	/// <param name="size">表示倍率を含む判定の幅と高さ</param>
 	BoxCollider(Vector2 pos, Vector2 offset, Game::Size size);
 
 	/// <summary>
@@ -33,13 +41,19 @@ public:
 	/// オブジェクトの中心に円の表示
 	/// </summary>
 	/// <param name="camera"></param>
-	void DispCol(GameSceneCamera camera);
+	void DispCol(std::weak_ptr<GameSceneCamera> camera) const;
+
+	/// <summary>
+	/// オブジェクトの中心位置を返す
+	/// </summary>
+	/// <returns></returns>
+	Vector2 GetPos() const { return _pos; }
 
 	/// <summary>
 	/// 大きさの倍率を含んだ判定の幅と高さ情報を返す
 	/// </summary>
 	/// <returns>大きさの倍率を含んだ判定の幅と高さ情報</returns>
-	Game::Size GetBoxSize() { return _colSize; }
+	Game::Size GetBoxSize() const { return _colSize; }
 
 	/// <summary>
 	/// 位置を加味した矩形情報を返す
@@ -83,12 +97,13 @@ public:
 	/// 大きさの倍率は含む
 	/// </summary>
 	/// <returns>位置と当たり判定を加味した矩形情報</returns>
-	Game::Rect AddCameraOffset(Game::Rect rect, const GameSceneCamera camera)
+	Game::Rect AddCameraOffset(Game::Rect rect, std::weak_ptr<GameSceneCamera> camera) const
 	{
-		rect.top    += static_cast<int>(camera.GetDrawOffset().y);
-		rect.bottom += static_cast<int>(camera.GetDrawOffset().y);
-		rect.left   += static_cast<int>(camera.GetDrawOffset().x);
-		rect.right  += static_cast<int>(camera.GetDrawOffset().x);
+		Vector2 offset = camera.lock()->GetDrawOffset();
+		rect.top    += static_cast<int>(offset.y);
+		rect.bottom += static_cast<int>(offset.y);
+		rect.left   += static_cast<int>(offset.x);
+		rect.right  += static_cast<int>(offset.x);
 		
 		return rect;
 	}

@@ -16,6 +16,8 @@ namespace Game
 	constexpr int kNotColChipNum1 = 51;  // •`‰æ‚È‚µ
 	constexpr int kNotColChipNum2 = 10;  // ”wŒi
 	constexpr int kNotColChipNum3 = 39;  // ‰œ‚Ì” 
+	constexpr int kNotColChipNum4 = 12;  // ”wŒi‚Æ‚ÌŒq‚¬‚Ì•Ç
+	constexpr int kNotColChipNum5 = 14;  // ”wŒi‚Æ‚ÌŒq‚¬‚Ì•Ç
 
 
 	//// ƒ}ƒbƒvƒ`ƒbƒvˆê‚Â“–‚½‚è‚Ì‰æ‘œƒTƒCƒY

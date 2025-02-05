@@ -5,47 +5,19 @@
 
 class Map;
 class GameSceneCamera;
-
-namespace
-{
-	constexpr float kSizeMul = 2.0f;
-
-	// 使用する画像のサイズ
-	constexpr int kGraphWidth = 16;
-	constexpr int kGraphHeight = 16;
-
-	// 当たり判定の幅と高さ
-	constexpr int kColWidth = 16 * kSizeMul;
-	constexpr int kColHeight = 6 * kSizeMul;
-
-	// 描画時の補正値
-	constexpr int kDrawPosOffsetX = 0;
-	constexpr int kDrawPosOffsetY = 6;
-	// 描画時の補正値(固定値)
-	// グラフィックのずれを直す為のもの
-	Vector2 kDrawPosOffset;
-
-	//アニメーション1コマのフレーム数
-	constexpr int kSingleAnimFrame = 4;
-
-	// アニメーションのコマ数
-	constexpr int kAnimNum = 4;
-
-	// アニメーション一周当たりのフレーム数
-	constexpr int kAnimTotalFrame = kAnimNum * kSingleAnimFrame;
-
-	// 移動速度
-	constexpr float kMoveSpeed = 3.5f * kSizeMul;
-}
+class Player;
+class PlayerBulletController;
 
 /// <summary>
 /// 敵の基底クラス
 /// </summary>
 class Enemy : public BoxCollider
 {
-private:
-	int _graphHandle;
+protected:
 	int _animFrameCount;
+
+	// 耐久力
+	int _hitPoint;
 	// 左ならtrue、右ならfalse
 	bool _isReverseGraphX;
 
@@ -58,40 +30,57 @@ private:
 	// _posは中心
 	Vector2 _vel;
 
-public:
+	// 初期位置保存
+	const Vector2 _spawnPos;
 
-	Enemy(int graphHandle);
-	~Enemy();
+	std::weak_ptr<Map> _map;
+
+public:
+	/// <summary>
+	/// コンストラクタ
+	/// </summary>
+	/// <param name="pos">中心位置</param>
+	/// <param name="offset">当たり判定作成時の位置補正値</param>
+	/// <param name="size">表示倍率を含む判定の幅と高さ</param>
+	Enemy(Vector2 pos, Vector2 offset, Game::Size size, int hitPoint);
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Init();
+	virtual void Init(std::weak_ptr<Map> map, 
+		std::weak_ptr<Player> player, 
+		std::weak_ptr<PlayerBulletController> playerBulletController, 
+		int idleHandle, 
+		int runHandle, 
+		int fallHandle) abstract;
 
 	/// <summary>
 	/// 内部変数の更新
 	/// </summary>
-	void Update(std::shared_ptr<Map> map);
+	virtual void Update() abstract;
 
 	/// <summary>
 	/// 描画全般
 	/// </summary>
-	void Draw(GameSceneCamera camera);
+	virtual void Draw(std::weak_ptr<GameSceneCamera> camera) abstract;
 
 	/// <summary>
 	/// 活性化
 	/// </summary>
-	bool Active(Vector2 pos, bool isReverse);
+	virtual bool Active(Vector2 pos, bool isReverse) abstract;
 
 	/// <summary>
 	/// 非活性化
 	/// </summary>
-	void DisActive();
+	virtual void DisActive() abstract;
+
+	/// <summary>
+	/// ダメージを食らった時の処理
+	/// </summary>
+	virtual void OnDamage(int damage, bool isReverseX) abstract;
 
 	/// <summary>
 	/// 活性化状態を取得
 	/// </summary>
-	bool GetActiveStats() { return _isActive; }
-
-
+	bool GetActiveStats() const { return _isActive; }
 };

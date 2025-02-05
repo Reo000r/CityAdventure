@@ -96,6 +96,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -129,8 +130,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DXLIB_DIR)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -143,11 +145,17 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
+    <ClCompile Include="CursorUI.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Enemy01.cpp" />
+    <ClCompile Include="Enemy02.cpp" />
+    <ClCompile Include="EnemyController.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameClearScene.cpp" />
+    <ClCompile Include="GameOverScene.cpp" />
     <ClCompile Include="GamePlayScene.cpp" />
     <ClCompile Include="GameSceneCamera.cpp" />
+    <ClCompile Include="GoalObject.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
@@ -156,17 +164,26 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerBullet.cpp" />
     <ClCompile Include="PlayerBulletController.cpp" />
+    <ClCompile Include="PlayerHitpointUI.cpp" />
     <ClCompile Include="SceneController.cpp" />
     <ClCompile Include="TitleScene.cpp" />
+    <ClCompile Include="UIBase.cpp" />
+    <ClCompile Include="UIController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="BoxCollider.h" />
+    <ClInclude Include="CursorUI.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Enemy01.h" />
+    <ClInclude Include="Enemy02.h" />
+    <ClInclude Include="EnemyController.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameClearScene.h" />
+    <ClInclude Include="GameOverScene.h" />
     <ClInclude Include="GamePlayScene.h" />
     <ClInclude Include="GameSceneCamera.h" />
+    <ClInclude Include="GoalObject.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MapChip.h" />
@@ -174,9 +191,12 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerBullet.h" />
     <ClInclude Include="PlayerBulletController.h" />
+    <ClInclude Include="PlayerHitpointUI.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneController.h" />
     <ClInclude Include="TitleScene.h" />
+    <ClInclude Include="UIBase.h" />
+    <ClInclude Include="UIController.h" />
     <ClInclude Include="Vector2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

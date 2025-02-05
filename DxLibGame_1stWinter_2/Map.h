@@ -46,16 +46,22 @@
 
 class GameSceneCamera;
 
+/// <summary>
+/// MapChipを管理する
+/// シーンだけがshared_ptrを持ち、他はweak_ptrしか持たない
+/// </summary>
 class Map
 {
 private:
 	int _mapGraphHandle;
 
+	// 当たり判定を行う際にmapが必要なので持つ
+	// 他から渡してもらえばいいと思うけど修正が大変なので一旦これで
 	std::weak_ptr<GameSceneCamera> _camera;
 
+	// std::vector<std::vector<std::shared_ptr<MapChip>>>とかで
+	// 持ったほうが良いと思うが、修正が大変なので一旦これで
 	std::shared_ptr<MapChip> _mapChip[MapGraphData::kMapSizeY][MapGraphData::kMapSizeX];
-
-	//std::shared_ptr<GameSceneCamera> _camera;
 
 public:
 	Map();
@@ -69,7 +75,7 @@ public:
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw(GameSceneCamera camera);
+	void Draw() const;
 	//void Draw();
 
 	/// <summary>
@@ -78,7 +84,7 @@ public:
 	/// <param name="chipX">横番号</param>
 	/// <param name="chipY">縦番号</param>
 	/// <returns></returns>
-	std::shared_ptr<MapChip> GetMapChipData(int chipX, int chipY)
+	std::shared_ptr<MapChip> GetMapChipData(int chipX, int chipY) const
 	{
 		// マップの範囲内なら返し、範囲外ならnullptrを返す
 		if (chipX >= 0 && chipX < MapGraphData::kMapSizeX &&
@@ -103,7 +109,7 @@ public:
 	/// <param name="vel"></param>
 	/// <param name="size"></param>
 	/// <returns></returns>
-	Vector2 CheckHitAllMapChip(const Vector2 pos, const Vector2 vel, const Game::Size size);
+	Vector2 CheckHitAllMapChip(const Vector2 pos, const Vector2 vel, const Game::Size size) const;
 
 	/// <summary>
 	/// マップチップ単体との当たり判定
@@ -113,6 +119,6 @@ public:
 	/// <param name="chipX"></param>
 	/// <param name="chipY"></param>
 	/// <returns></returns>
-	bool CheckHitMapChip(const Vector2 pos, const Game::Size size, const int chipX, const int chipY);
+	bool CheckHitMapChip(const Vector2 pos, const Game::Size size, const int chipX, const int chipY) const;
 };
 

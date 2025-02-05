@@ -1,6 +1,8 @@
 #pragma once
 #include "BoxCollider.h"
 
+#include <memory>
+
 namespace MapGraphData
 {
 	// 使用する画像のサイズ
@@ -10,7 +12,7 @@ namespace MapGraphData
 
 	// マップの縦横に敷くマップチップの数
 	constexpr int kMapSizeX = 100;
-	constexpr int kMapSizeY = 20;
+	constexpr int kMapSizeY = 40;
 
 	// 元画像に含まれているチップの数
 	constexpr int kNumOfChipInDataX = 9;
@@ -33,6 +35,8 @@ namespace MapColData
 /// <summary>
 /// マップチップ一つひとつの情報
 /// まとめてMapが配列として持っている
+/// vector<vector<MapChip>>とかで持ったほうが良いと思うが
+/// 修正が大変なので一旦これで
 /// </summary>
 class MapChip : public BoxCollider
 {
@@ -77,37 +81,37 @@ public:
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw(GameSceneCamera camera, int mapGraphHandle);
+	void Draw(std::weak_ptr<GameSceneCamera> camera, int mapGraphHandle) const;
 
 	/// <summary>
 	/// 現在位置を返す
 	/// </summary>
 	/// <returns></returns>
-	Vector2 GetPos()          { return _pos; }
+	Vector2 GetPos() const    { return _pos; }
 
 	/// <summary>
 	/// 参照しているマップチップ番号を返す
 	/// </summary>
 	/// <returns></returns>
-	int GetMapChipNum()       { return _mapChipNum; }
+	int GetMapChipNum() const { return _mapChipNum; }
 
 	/// <summary>
 	/// 元画像の左から数えた位置
 	/// </summary>
 	/// <returns></returns>
-	int GetNumOnDataX() { return _mapChipNum % MapGraphData::kNumOfChipInDataX; }
+	int GetNumOnDataX() const { return _mapChipNum % MapGraphData::kNumOfChipInDataX; }
 	
 	/// <summary>
 	/// 元画像の上から数えた位置
 	/// </summary>
 	/// <returns></returns>
-	int GetNumOnDataY() { return _mapChipNum / MapGraphData::kNumOfChipInDataX; }
+	int GetNumOnDataY() const { return _mapChipNum / MapGraphData::kNumOfChipInDataX; }
 
 	/// <summary>
 	/// 使用する画像のサイズ
 	/// </summary>
 	/// <returns></returns>
-	Game::Size GetChipGraphSize()
+	Game::Size GetChipGraphSize() const
 	{
 		Game::Size ans;
 		ans.width  = MapGraphData::kGraphSizeX;
@@ -119,7 +123,7 @@ public:
 	/// マップチップの判定サイズ
 	/// </summary>
 	/// <returns></returns>
-	Game::Size GetChipColSize()
+	Game::Size GetChipColSize() const
 	{
 		Game::Size ans;
 		ans.width  = MapColData::kColSizeX;
@@ -131,11 +135,11 @@ public:
 	/// 元画像内での位置を返す
 	/// </summary>
 	/// <returns></returns>
-	Vector2 GetPosInGraph()
+	Vector2 GetPosInGraph() const
 	{
 		Vector2 ans;
-		ans.x = GetNumOnDataX() * MapGraphData::kGraphSizeX;
-		ans.y = GetNumOnDataY() * MapGraphData::kGraphSizeY;
+		ans.x = static_cast<float>(GetNumOnDataX() * MapGraphData::kGraphSizeX);
+		ans.y = static_cast<float>(GetNumOnDataY() * MapGraphData::kGraphSizeY);
 		return ans;
 	}
 };

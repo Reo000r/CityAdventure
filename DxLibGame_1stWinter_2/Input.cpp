@@ -16,13 +16,13 @@ void Input::Update()
 	_padInput = GetJoypadInputState(DX_INPUT_KEY_PAD1);
 }
 
-bool Input::IsPress(int button)
+bool Input::IsPress(int button) const
 {
 	// ‰Ÿ‚³‚ê‚Ä‚¢‚ê‚Îtrue
 	return (_padInput & button);
 }
 
-bool Input::IsTrigger(int button)
+bool Input::IsTrigger(int button) const
 {
 	// ‰Ÿ‚³‚ê‚Ä‚¢‚ê‚Îtrue.‚»‚¤‚Å‚È‚¢‚È‚çfalse
 	bool isNow = (_padInput & button);

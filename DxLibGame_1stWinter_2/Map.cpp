@@ -17,7 +17,8 @@ Map::Map() :
 {
 	PlatinumLoader& loader = PlatinumLoader::GetInstance();
 
-	loader.Load(L"data/mapdata/stage1.fmf");
+	//loader.Load(L"data/mapdata/stage1.fmf");
+	loader.Load(L"data/mapdata/stage.fmf");
 
 	int mapWidth = 0;
 	int mapHeight = 0;
@@ -56,7 +57,7 @@ void Map::Init(int mapGraphHandle, std::weak_ptr<GameSceneCamera> camera)
 	_camera = camera;
 }
 
-void Map::Draw(GameSceneCamera camera)
+void Map::Draw() const
 {
 	//DrawBox(0, 0, Game::kScreenWidth, Game::kScreenHeight, kBackGroundColor, true);
 
@@ -69,14 +70,14 @@ void Map::Draw(GameSceneCamera camera)
 			// 透明なら次へ
 			if (chipNo == Game::kEmptyChipNum) continue;
 
-			_mapChip[chipY][chipX]->Draw(camera, _mapGraphHandle);
+			_mapChip[chipY][chipX]->Draw(_camera, _mapGraphHandle);
 		}
 	}
 }
 
-Vector2 Map::CheckHitAllMapChip(Vector2 pos, const Vector2 vel, const Game::Size size)
+Vector2 Map::CheckHitAllMapChip(Vector2 pos, const Vector2 vel, const Game::Size size) const
 {
-	// サイズが最初から0なら動かさず早期return
+	// 最初から0ならreturn
 	if (vel.Magnitude() == 0.0f)
 	{
 		return vel;
@@ -111,8 +112,13 @@ Vector2 Map::CheckHitAllMapChip(Vector2 pos, const Vector2 vel, const Game::Size
 				}
 
 				// 当たり判定を取る前に
-				// 距離的に絶対当たらない事を保証されているマップチップは
-				// この時点でcontinueしてしまいたい
+				// 距離的に絶対当たらない事が確定しているチップは
+				// この時点でcontinueしたい
+				Vector2 chipPos = GetMapChipData(chipX, chipY)->GetPos();
+				if (futurePos.Distance(futurePos, chipPos) > 800)
+				{
+					continue;
+				}
 
 				isHit = CheckHitMapChip(futurePos, size, chipX, chipY);
 
@@ -181,7 +187,7 @@ Vector2 Map::CheckHitAllMapChip(Vector2 pos, const Vector2 vel, const Game::Size
 	return resultVel;
 }
 
-bool Map::CheckHitMapChip(const Vector2 pos, const Game::Size size, const int chipX, const int chipY)
+bool Map::CheckHitMapChip(const Vector2 pos, const Game::Size size, const int chipX, const int chipY) const
 {
 	std::shared_ptr<MapChip> chip = GetMapChipData(chipX, chipY);
 

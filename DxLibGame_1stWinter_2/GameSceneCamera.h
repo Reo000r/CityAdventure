@@ -3,6 +3,10 @@
 
 class Player;
 
+/// <summary>
+/// ゲーム中のカメラ挙動を管理する
+/// シーンだけがshared_ptrを持ち、他はweak_ptrしか持たない
+/// </summary>
 class GameSceneCamera
 {
 private:

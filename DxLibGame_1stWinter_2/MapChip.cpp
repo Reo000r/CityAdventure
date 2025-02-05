@@ -17,13 +17,13 @@ void MapChip::Update()
 {
 }
 
-void MapChip::Draw(GameSceneCamera camera, int mapGraphHandle)
+void MapChip::Draw(std::weak_ptr<GameSceneCamera> camera, int mapGraphHandle) const
 {
 	// 表示しない番号なら描画処理なし
 	if (_mapChipNum == Game::kEmptyChipNum) return;
 
 	// 表示位置
-	Vector2 pos = _pos + camera.GetDrawOffset();
+	Vector2 pos = _pos + camera.lock()->GetDrawOffset();
 
 	// 切り出し位置、切り出す量
 	Vector2 cutPos  = GetPosInGraph();

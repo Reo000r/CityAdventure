@@ -8,12 +8,15 @@
 namespace
 {
 	// プレイヤーを追尾し始める範囲
-	constexpr int kCameraMoveRangeX = 50;
-	constexpr int kCameraMoveRangeY = 220;
+	constexpr int kCameraMoveRangeX = 40;
+	constexpr int kCameraMoveRangeY = 50;
 
-	// プレイヤーを追う限界距離
+	// プレイヤーを追う限界距離(上下)
 	constexpr int kCameraMaxRangeTop = 0;
-	constexpr int kCameraMaxRangeBottom = 1000;
+	constexpr int kCameraMaxRangeBottom = 880 + 1024 + 32*2*3;
+	// プレイヤーを追う限界距離(左右)
+	constexpr int kCameraMaxRangeRight = 5725;
+	constexpr int kCameraMaxRangeLeft = 620;
 
 
 	// Lerpを行う倍率
@@ -85,6 +88,17 @@ void GameSceneCamera::Update()
 		_pos.y = kCameraMaxRangeBottom;
 	}
 
+	if (_pos.x < kCameraMaxRangeLeft)
+	{
+		// 左
+		_pos.x = kCameraMaxRangeLeft;
+	}
+	if (_pos.x > kCameraMaxRangeRight)
+	{
+		// 右
+		_pos.x = kCameraMaxRangeRight;
+	}
+
 	// _drawOffsetを調整していく
 	// 直感的に書けるように反転させる
 	_drawOffset = _pos * -1;
@@ -94,5 +108,5 @@ void GameSceneCamera::Update()
 	_drawOffset.x += Game::kScreenCenterWidth;
 	_drawOffset.y += Game::kScreenCenterHeight;
 
-	//printfDx(L"%f / %f\n", _drawOffset.x, _drawOffset.y);
+	//DrawFormatString(96, 144, 0xffffff, L"CameraPos : %f/%f", _pos.x, _pos.y);
 }

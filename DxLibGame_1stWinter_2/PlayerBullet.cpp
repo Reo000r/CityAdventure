@@ -3,14 +3,14 @@
 
 
 PlayerBullet::PlayerBullet(int graphHandle) :
-	BoxCollider({ 0.0f, 0.0f }, { kDrawPosOffsetX, kDrawPosOffsetY }, { kColWidth, kColHeight }),
+	BoxCollider({ 0.0f, 0.0f }, { PlayerBulletData::kDrawPosOffsetX, PlayerBulletData::kDrawPosOffsetY }, { PlayerBulletData::kColWidth, PlayerBulletData::kColHeight }),
 	_graphHandle(graphHandle),
 	_animFrameCount(0),
 	_isReverseGraphX(false),
 	_lifeTimeCount(0),
 	_isActive(false),
 	_vel({0.0f, 0.0f}), 
-	_drawPosOffset({ kDrawPosOffsetX, kDrawPosOffsetY })
+	_drawPosOffset({ PlayerBulletData::kDrawPosOffsetX, PlayerBulletData::kDrawPosOffsetY })
 {
 }
 
@@ -22,7 +22,7 @@ void PlayerBullet::Init()
 {
 }
 
-void PlayerBullet::Update(std::shared_ptr<Map> map)
+void PlayerBullet::Update(std::weak_ptr<Map> map)
 {
 	// Controller側で弾いているはずだが念のため
 	if (!_isActive) return;
@@ -38,7 +38,7 @@ void PlayerBullet::Update(std::shared_ptr<Map> map)
 
 	_animFrameCount++;
 	// アニメーションの合計フレーム数を超えたら最初に戻す
-	if (_animFrameCount >= kAnimTotalFrame)
+	if (_animFrameCount >= PlayerBulletData::kAnimTotalFrame)
 	{
 		_animFrameCount = 0;
 	}
@@ -47,17 +47,17 @@ void PlayerBullet::Update(std::shared_ptr<Map> map)
 	if (!_isReverseGraphX)
 	{
 		// 右
-		_vel.x = kMoveSpeed;
+		_vel.x = PlayerBulletData::kMoveSpeed;
 	}
 	else
 	{
 		// 左
-		_vel.x = -kMoveSpeed;
+		_vel.x = -PlayerBulletData::kMoveSpeed;
 	}
 	_vel.y = 0.0f;
 
 	// 当たり判定
-	Vector2 returnVel = map->CheckHitAllMapChip(_pos, _vel, _colSize);
+	Vector2 returnVel = map.lock()->CheckHitAllMapChip(_pos, _vel, _colSize);
 
 	// 移動ベクトルが修正された場合は当たっている
 	if (_vel.x != returnVel.x || _vel.y != returnVel.y)
@@ -71,31 +71,31 @@ void PlayerBullet::Update(std::shared_ptr<Map> map)
 	_pos += _vel;
 }
 
-void PlayerBullet::Draw(GameSceneCamera camera)
+void PlayerBullet::Draw(std::weak_ptr<GameSceneCamera> camera)
 {
 	// Controller側で弾いているはずだが念のため
 	if (!_isActive) return;
 
 	// グラフィックの切り出し位置(X座標)を計算する
-	int animNo = _animFrameCount / kSingleAnimFrame;
+	int animNo = _animFrameCount / PlayerBulletData::kSingleAnimFrame;
 
 	// 表示位置(中心)
-	int x = static_cast<int>(_pos.x + camera.GetDrawOffset().x);
-	int y = static_cast<int>(_pos.y + camera.GetDrawOffset().y);
+	int x = static_cast<int>(_pos.x + camera.lock()->GetDrawOffset().x);
+	int y = static_cast<int>(_pos.y + camera.lock()->GetDrawOffset().y);
 
 	// 切り出し開始位置
-	int cutX = animNo * kGraphWidth;
+	int cutX = animNo * PlayerBulletData::kGraphWidth;
 	int cutY = 0;
 
 	// 切り出し量
-	int width  = kGraphWidth;
-	int height = kGraphHeight;
+	int width  = PlayerBulletData::kGraphWidth;
+	int height = PlayerBulletData::kGraphHeight;
 
 	DrawRectRotaGraph(
 		x, y,
 		cutX, cutY,
 		width, height,
-		kSizeMul, 0.0,
+		PlayerBulletData::kSizeMul, 0.0,
 		_graphHandle, true, _isReverseGraphX, false);
 
 #ifdef _DEBUG
@@ -115,11 +115,11 @@ bool PlayerBullet::Active(Vector2 pos, bool isReverse)
 	_isReverseGraphX = isReverse;
 
 	// 持続時間の設定
-	_lifeTimeCount = kLifeTime;
+	_lifeTimeCount = PlayerBulletData::kLifeTime;
 
 	_pos = pos;
 	// 生成位置の補正
-	Vector2 offset = kActivePosOffset;
+	Vector2 offset = PlayerBulletData::kActivePosOffset;
 	// x軸の反転処理
 	if (_isReverseGraphX)
 	{

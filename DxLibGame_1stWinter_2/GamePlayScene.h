@@ -2,11 +2,15 @@
 #include "Scene.h"
 
 #include <memory>
+#include <vector>
 
 class Player;
+class EnemyController;
+class GoalObject;
 class Map;
 class GameSceneCamera;
-class Physics;
+class UIController;
+class PlayerBulletController;
 
 class GamePlayScene : public Scene
 {
@@ -17,12 +21,22 @@ private:
 	int _playerRunGraphHandle;
 	int _playerJumpGraphHandle;
 	int _playerFallGraphHandle;
+	int _playerDeathGraphHandle;
+	int _goalGraphHandle;
 	int _mapGraphHandle;
 	int _backgroundGraphHandle;
 
+	// 次のシーン
+	// 暗黙的に変換してくれるっぽい
+	std::shared_ptr<Scene> _nextScene;
+
 	std::shared_ptr<Player> _player;
+	std::shared_ptr<PlayerBulletController> _playerBulletController;
+	std::shared_ptr<EnemyController> _enemyController;
+	std::shared_ptr<GoalObject> _goal; // mapとまとめたかった
 	std::shared_ptr<Map> _map;
 	std::shared_ptr<GameSceneCamera> _camera;
+	std::shared_ptr<UIController> _uiController;
 	//physicsの参照が欲しいな
 
 	// UpdateとDrawのStateパターン

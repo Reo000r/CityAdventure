@@ -5,8 +5,13 @@
 
 class Map;
 
-namespace
+namespace PlayerBulletData
 {
+	// 攻撃力
+	constexpr int kAddDamageAmount = 1;
+
+
+
 	constexpr float kSizeMul = 2.0f;
 
 	// 使用する画像のサイズ
@@ -14,8 +19,8 @@ namespace
 	constexpr int kGraphHeight = 16;
 	
 	// 当たり判定の幅と高さ
-	constexpr int kColWidth  = 16 * kSizeMul;
-	constexpr int kColHeight = 6  * kSizeMul;
+	constexpr int kColWidth  = static_cast<int>(16 * kSizeMul);
+	constexpr int kColHeight = static_cast<int>(6 * kSizeMul);
 
 	// 描画時の補正値
 	constexpr int kDrawPosOffsetX = 0;
@@ -80,12 +85,12 @@ public:
 	/// <summary>
 	/// 内部変数の更新
 	/// </summary>
-	void Update(std::shared_ptr<Map> map);
+	void Update(std::weak_ptr<Map> map);
 
 	/// <summary>
 	/// 描画全般
 	/// </summary>
-	void Draw(GameSceneCamera camera);
+	void Draw(std::weak_ptr<GameSceneCamera> camera);
 
 	/// <summary>
 	/// 活性化
@@ -100,8 +105,12 @@ public:
 	/// <summary>
 	/// 活性化状態を取得
 	/// </summary>
-	bool GetActiveStats() { return _isActive; }
+	bool GetActiveStats() const { return _isActive; }
 
-
+	/// <summary>
+	/// 攻撃力を取得
+	/// </summary>
+	/// <returns></returns>
+	int GetDamage() const { return PlayerBulletData::kAddDamageAmount; }
 };
 

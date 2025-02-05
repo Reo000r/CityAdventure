@@ -2,6 +2,7 @@
 #include "GamePlayScene.h"  // 遷移先のシーン
 #include "Scene.h"
 #include "SceneController.h"
+#include "CursorUI.h"
 
 #include "Input.h"
 #include "Game.h"
@@ -13,6 +14,7 @@
 void TitleScene::FadeinUpdate()
 {
 	_frame--;
+	_titleFadeFrameCount++;
 	if (_frame <= 0)
 	{
 		_nowUpdateState = &TitleScene::NormalUpdate;
@@ -22,8 +24,40 @@ void TitleScene::FadeinUpdate()
 
 void TitleScene::NormalUpdate()
 {
-	//if (Input::GetInstance().IsTrigger(KEY_INPUT_RETURN))
-	if (Input::GetInstance().IsTrigger(PAD_INPUT_1))
+	_titleFadeFrameCount++;
+
+	_cursor->Update();
+
+	// 終わっていたら
+	if (_titleFadeFrameCount >= TitleSceneData::kTitleFadeFrame + 120)
+	{
+		_startTitleAnim = false;
+		// 入力を受け付ける
+		_cursor->SetCanInput(true);
+		_cursor->SetUseHandle(_cursorUndecisionHandle);
+		_cursor->SetCursorVel({});
+	}
+	// アニメーションが始まっていない かつ 1/2終わっていたら
+	else if(!_startTitleAnim &&
+			_titleFadeFrameCount >= TitleSceneData::kTitleFadeFrame / 2)
+	{
+		_startTitleAnim = true;
+		_cursor->SetUseHandle(_cursorDecisionHandle);
+		Vector2 vel = {5.0f, 0.0f};
+		_cursor->SetCursorVel(vel);
+	}
+
+	// 押されたらエフェクトを動かす
+	// (雑)
+	if (_cursor->GetDecisionFrame())
+	{
+		_cursor->SetUseHandle(_cursorDecisionHandle);
+		Vector2 vel = { 8.0f, 0.0f };
+		_cursor->SetEffectVel(vel);
+	}
+
+	// 決定を押して一定時間経ったら
+	if (_cursor->GetDecisionFrame() >= 60)
 	{
 		_nowUpdateState = &TitleScene::FadeoutUpdate;
 		_nowDrawState = &TitleScene::FadeDraw;
@@ -44,11 +78,25 @@ void TitleScene::FadeoutUpdate()
 
 void TitleScene::FadeDraw()
 {
-	DrawGraph(kBackgroundGraphOffsetX, kBackgroundGraphOffsetY, _backgroundGraphHandle, false);
-	DrawGraph(kTitleGraphOffsetX, kTitleGraphOffsetY, _titleGraphHandle, true);
-
 	// 背景の表示
-	DrawRotaGraph(static_cast<int>(Game::kScreenCenterWidth), static_cast<int>(Game::kScreenCenterHeight), 1.0, 0.0f, _graphHandle, true);
+	DrawGraph(TitleSceneData::kBackgroundGraphOffsetX, TitleSceneData::kBackgroundGraphOffsetY, _backgroundGraphHandle, false);
+	
+	// タイトル
+	// 0が透明
+	float a = static_cast<float>(_titleFadeFrameCount) / TitleSceneData::kTitleFadeFrame;
+	if (a > 1.0f) a = 1.0f;
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(255 * a));
+	DrawGraph(TitleSceneData::kTitleGraphOffsetX, TitleSceneData::kTitleGraphOffsetY, _titleGraphHandle, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	
+	_cursor->Draw();
+
+	// start
+	a = static_cast<float>(_titleFadeFrameCount - TitleSceneData::kTitleFadeFrame / 2) / TitleSceneData::kTitleFadeFrame;
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(255 * a));
+	DrawRotaGraph(Game::kScreenCenterWidth, Game::kScreenCenterHeight + 200,
+		0.5, 0.0f, _startHighlightStringGraphHandle, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	// フェードイン/アウトの処理
 	// フェード割合の計算(0.0-1.0)
@@ -61,30 +109,70 @@ void TitleScene::FadeDraw()
 
 void TitleScene::NormalDraw()
 {
-	DrawGraph(kBackgroundGraphOffsetX, kBackgroundGraphOffsetY, _backgroundGraphHandle, false);
-	DrawGraph(kTitleGraphOffsetX, kTitleGraphOffsetY, _titleGraphHandle, true);
+	// 背景の表示
+	DrawGraph(TitleSceneData::kBackgroundGraphOffsetX, TitleSceneData::kBackgroundGraphOffsetY, _backgroundGraphHandle, false);
+	
+	// タイトル
+	// 0が透明
+	float a = static_cast<float>(_titleFadeFrameCount) / TitleSceneData::kTitleFadeFrame;
+	if (a > 1.0f) a = 1.0f;
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(255 * a));
+	DrawGraph(TitleSceneData::kTitleGraphOffsetX, TitleSceneData::kTitleGraphOffsetY, _titleGraphHandle, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-	DrawRotaGraph(static_cast<int>(Game::kScreenCenterWidth), static_cast<int>(Game::kScreenCenterHeight), 1.0, 0.0f, _graphHandle, true);
+	_cursor->Draw();
+
+	// start
+	a = static_cast<float>(_titleFadeFrameCount - TitleSceneData::kTitleFadeFrame/2) / TitleSceneData::kTitleFadeFrame;
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(255 * a));
+	DrawRotaGraph(Game::kScreenCenterWidth, Game::kScreenCenterHeight + 200,
+		0.5, 0.0f, _startHighlightStringGraphHandle, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	
+#ifdef _DEBUG
 	DrawFormatString(0, 0, 0xffffff, L"Title Scene");
+#endif
 }
 
 TitleScene::TitleScene() :
 	_frame(Game::kFadeInterval),
+	_titleFadeFrameCount(0),
+	_startTitleAnim(false),
+	_cursor(std::make_shared<CursorUI>()),
 	_nowUpdateState(&TitleScene::FadeinUpdate),
 	_nowDrawState(&TitleScene::FadeDraw)
 {
-	_graphHandle = LoadGraph(L"data/img/player/0/Player0_Idle.png");
-	assert(_graphHandle >= 0);
-
 	_titleGraphHandle = LoadGraph(L"data/img/background/Title.png");
 	assert(_titleGraphHandle >= 0);
 	_backgroundGraphHandle = LoadGraph(L"data/img/background/Background.png");
 	assert(_backgroundGraphHandle >= 0);
+	// string
+	_startHighlightStringGraphHandle = LoadGraph(L"data/img/string/Start_Highlight.png");
+	assert(_startHighlightStringGraphHandle >= 0);
+	// cursor
+	_cursorUndecisionHandle = LoadGraph(L"data/img/player/normal/NormalPlayer_Idle.png");
+	assert(_cursorUndecisionHandle >= 0);
+	_cursorDecisionHandle = LoadGraph(L"data/img/player/normal/NormalPlayer_Run.png");
+	assert(_cursorDecisionHandle >= 0);
+	_cursorEffectHandle = LoadGraph(L"data/img/player/normal/NormalPlayer_Bullet.png");
+	assert(_cursorEffectHandle >= 0);
+
+	Vector2 pos    = TitleSceneData::kStartCursorPos;
+	Vector2 addPos = TitleSceneData::kAddCursorPos;
+	// 入力はfalse
+	_cursor->Init(pos, addPos, 5.0f, 4.0f, _cursorUndecisionHandle, _cursorDecisionHandle, _cursorEffectHandle, false);
+
+	_cursor->SetSingleAnimFrame(8, 8, 5);
 }
 
 TitleScene::~TitleScene()
 {
-	DeleteGraph(_graphHandle);
+	DeleteGraph(_titleGraphHandle);
+	DeleteGraph(_backgroundGraphHandle);
+	DeleteGraph(_startHighlightStringGraphHandle);
+	DeleteGraph(_cursorUndecisionHandle);
+	DeleteGraph(_cursorDecisionHandle);
+	DeleteGraph(_cursorEffectHandle);
 }
 
 void TitleScene::Update()

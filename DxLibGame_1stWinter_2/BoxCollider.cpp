@@ -21,12 +21,12 @@ BoxCollider::BoxCollider(Vector2 pos, Vector2 offset, Game::Size size) :
 
 }
 
-void BoxCollider::DispCol(GameSceneCamera camera)
+void BoxCollider::DispCol(std::weak_ptr<GameSceneCamera> camera) const
 {
 	// ’†S‚É‰~‚ð•\Ž¦
 	Vector2 circlePos;
-	circlePos.x = _pos.x + _colPosOffset.x + camera.GetDrawOffset().x;
-	circlePos.y = _pos.y + _colPosOffset.y + camera.GetDrawOffset().y;
+	circlePos.x = _pos.x + _colPosOffset.x + camera.lock()->GetDrawOffset().x;
+	circlePos.y = _pos.y + _colPosOffset.y + camera.lock()->GetDrawOffset().y;
 	DrawCircle(circlePos.x, circlePos.y, kDispColRad, kDispColColor, false);
 
 

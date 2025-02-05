@@ -5,32 +5,34 @@
 
 #include <cassert>
 
-PlayerBulletController::PlayerBulletController()
+PlayerBulletController::PlayerBulletController() :
+	_bulletGraphHandle(0)
 {
 }
 
 PlayerBulletController::~PlayerBulletController()
 {
+	DeleteGraph(_bulletGraphHandle);
 }
 
 void PlayerBulletController::Init()
 {
 	// 弾のグラフィックをロード
-	int bulletGraphHandle = LoadGraph(L"data/img/player/0/Player0_Bullet.png");
-	assert(bulletGraphHandle >= 0);
+	_bulletGraphHandle = LoadGraph(L"data/img/player/normal/NormalPlayer_Bullet.png");
+	assert(_bulletGraphHandle >= 0);
 
 	// 弾を定数の数だけ生成
 	for (int i = 0; i < kBulletNum; i++)
 	{
 		// 生成と初期化、リストへの追加を行う
 		// std::shared_ptr<PlayerBullet>
-		auto bullet = std::make_shared<PlayerBullet>(bulletGraphHandle);
+		auto bullet = std::make_shared<PlayerBullet>(_bulletGraphHandle);
 		bullet->Init();
 		_bulletList.push_back(bullet);
 	}
 }
 
-void PlayerBulletController::Update(std::shared_ptr<Map> map)
+void PlayerBulletController::Update(std::weak_ptr<Map> map)
 {
 	for (auto& bullet : _bulletList)
 	{
@@ -41,7 +43,7 @@ void PlayerBulletController::Update(std::shared_ptr<Map> map)
 	}
 }
 
-void PlayerBulletController::Draw(GameSceneCamera camera)
+void PlayerBulletController::Draw(std::weak_ptr<GameSceneCamera> camera)
 {
 	for (auto& bullet : _bulletList)
 	{
@@ -65,4 +67,33 @@ void PlayerBulletController::AddBullet(Vector2 pos, bool isReverse)
 			break;
 		}
 	}
+}
+
+bool PlayerBulletController::IsHitBullet(Game::Rect rect, std::weak_ptr<PlayerBullet>& returnBullet)
+{
+	// 全ての弾と当たり判定を行う
+	for (auto& bullet : _bulletList)
+	{
+		// 非活性化状態なら飛ばす
+		if (!bullet->GetActiveStats()) continue;
+
+		// 弾の当たり判定を取得
+		Game::Rect bulletRect = bullet->GetRect();
+
+		// 弾と当たり判定
+		bool isHit = !(
+			(rect.top >= bulletRect.bottom || rect.bottom <= bulletRect.top) ||
+			(rect.left >= bulletRect.right || rect.right <= bulletRect.left));
+		// 当たっていたら
+		if (isHit)
+		{
+			returnBullet = bullet;
+			// 弾を非活性化
+			bullet->DisActive();
+			return true;
+		}
+	}
+
+	// 当たっていなかったら
+	return false;
 }
