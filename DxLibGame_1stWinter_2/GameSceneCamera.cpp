@@ -12,10 +12,10 @@ namespace
 	constexpr int kCameraMoveRangeY = 50;
 
 	// プレイヤーを追う限界距離(上下)
-	constexpr int kCameraMaxRangeTop = 0;
+	constexpr int kCameraMaxRangeTop = 512 - 128;
 	constexpr int kCameraMaxRangeBottom = 880 + 1024 + 32*2*3;
 	// プレイヤーを追う限界距離(左右)
-	constexpr int kCameraMaxRangeRight = 5725;
+	constexpr int kCameraMaxRangeRight = 5725 - 2500;
 	constexpr int kCameraMaxRangeLeft = 620;
 
 

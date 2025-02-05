@@ -18,7 +18,7 @@ Application& Application::GetInstance()
 bool Application::Init()
 {
 	SetGraphMode(Game::kScreenWidth, Game::kScreenHeight, 32);
-	ChangeWindowMode(true);
+	ChangeWindowMode(false);
 	SetWindowText(L"ShotMan MainWindow");
 
 	if (DxLib_Init())
@@ -54,11 +54,17 @@ void Application::Run()
 		ScreenFlip();
 		_frame++;
 
+		if (CheckHitKey(KEY_INPUT_ESCAPE))
+		{
+			break;
+		}
+
 		// FPS60‚ÉŒÅ’è‚·‚é
 		while (GetNowHiPerformanceCount() - time < 16667)
 		{
 		}
 	}
+
 }
 
 void Application::Terminate()
