@@ -57,7 +57,7 @@ void TitleScene::NormalUpdate()
 	}
 
 	// Œˆ’è‚ð‰Ÿ‚µ‚Äˆê’èŽžŠÔŒo‚Á‚½‚ç
-	if (_cursor->GetDecisionFrame() >= 60)
+	if (_cursor->GetDecisionFrame() >= TitleSceneData::kFadeFrame)
 	{
 		_nowUpdateState = &TitleScene::FadeoutUpdate;
 		_nowDrawState = &TitleScene::FadeDraw;
@@ -68,8 +68,14 @@ void TitleScene::NormalUpdate()
 void TitleScene::FadeoutUpdate()
 {
 	_frame++;
-	if (_frame >= 60)
+	float volMul = static_cast<float>(TitleSceneData::kFadeFrame - _frame) / TitleSceneData::kFadeFrame;
+	int titleVol = Game::kSoundVolume * TitleSceneData::kBGMVolMul * volMul;
+	if (titleVol >= 255) titleVol = 255;
+	ChangeVolumeSoundMem(titleVol, _titleBGMHandle);
+
+	if (_frame >= TitleSceneData::kFadeFrame)
 	{
+		StopSoundMem(_titleBGMHandle);
 		SceneController::GetInstance().ChangeScene(std::make_shared<GamePlayScene>());
 		return;  // Ž©•ª‚ªŽ€‚ñ‚Å‚¢‚é‚Ì‚Å‚à‚µ
 		// —]Œv‚Èˆ—‚ª“ü‚Á‚Ä‚¢‚é‚Æ‚Ü‚¸‚¢‚Ì‚Åreturn;
@@ -156,6 +162,9 @@ TitleScene::TitleScene() :
 	assert(_cursorDecisionHandle >= 0);
 	_cursorEffectHandle = LoadGraph(L"data/img/player/normal/NormalPlayer_Bullet.png");
 	assert(_cursorEffectHandle >= 0);
+	// bgm
+	_titleBGMHandle = LoadSoundMem(L"data/sound/bgm/TitleSceneBGM.mp3");
+	assert(_titleBGMHandle >= 0);
 
 	Vector2 pos    = TitleSceneData::kStartCursorPos;
 	Vector2 addPos = TitleSceneData::kAddCursorPos;
@@ -173,6 +182,8 @@ TitleScene::~TitleScene()
 	DeleteGraph(_cursorUndecisionHandle);
 	DeleteGraph(_cursorDecisionHandle);
 	DeleteGraph(_cursorEffectHandle);
+
+	DeleteSoundMem(_titleBGMHandle);
 }
 
 void TitleScene::Update()
@@ -183,4 +194,13 @@ void TitleScene::Update()
 void TitleScene::Draw()
 {
 	(this->*_nowDrawState)();
+}
+
+void TitleScene::StartBGM()
+{
+	// bgmÄ¶
+	PlaySoundMem(_titleBGMHandle, DX_PLAYTYPE_LOOP);
+	int titleVol = Game::kSoundVolume * TitleSceneData::kBGMVolMul;
+	if (titleVol >= 255) titleVol = 255;
+	ChangeVolumeSoundMem(titleVol, _titleBGMHandle);
 }

@@ -5,6 +5,7 @@
 #include "Map.h"
 #include "MapChip.h"
 #include "PlayerBulletController.h"
+#include "scoreController.h"
 
 #include "Input.h"
 #include "Vector2.h"
@@ -99,6 +100,9 @@ void Player::IdleUpdate()
 
 	// 弾の更新処理
 	_bulletController.lock()->Update(_map);
+
+	ScoreController& scoreController = ScoreController::GetInstance();
+	scoreController.SetPlayerHitpoint(_hitPoint);
 }
 
 void Player::RunUpdate()
@@ -220,6 +224,9 @@ void Player::RunUpdate()
 
 	// 弾の更新処理
 	_bulletController.lock()->Update(_map);
+
+	ScoreController& scoreController = ScoreController::GetInstance();
+	scoreController.SetPlayerHitpoint(_hitPoint);
 }
 
 void Player::AirUpdate()
@@ -342,6 +349,9 @@ void Player::AirUpdate()
 
 	// 弾の更新処理
 	_bulletController.lock()->Update(_map);
+
+	ScoreController& scoreController = ScoreController::GetInstance();
+	scoreController.SetPlayerHitpoint(_hitPoint);
 }
 
 void Player::DamageUpdate()
@@ -426,6 +436,9 @@ void Player::DamageUpdate()
 
 	// 弾の更新処理
 	_bulletController.lock()->Update(_map);
+
+	ScoreController& scoreController = ScoreController::GetInstance();
+	scoreController.SetPlayerHitpoint(_hitPoint);
 }
 
 void Player::DeathUpdate()
@@ -484,7 +497,10 @@ void Player::DeathUpdate()
 
 
 	// 弾の更新処理
-	//_bulletController.lock()->Update(_map);
+	_bulletController.lock()->Update(_map);
+
+	ScoreController& scoreController = ScoreController::GetInstance();
+	scoreController.SetPlayerHitpoint(_hitPoint);
 }
 
 void Player::FallDeathUpdate()
@@ -655,8 +671,13 @@ bool Player::IsFallOutOfPlayArea()
 	if (_pos.y >= PlayerData::kDeadHeight)
 	{
 		// 設定をしてからreturn
+		_hitPoint = 0;
 		_animFrameCount = 0;
 		_useHandle = _deathHandle;
+
+		ScoreController& scoreController = ScoreController::GetInstance();
+		scoreController.SetPlayerHitpoint(_hitPoint);
+		
 		_nowUpdateState = &Player::FallDeathUpdate;
 		return true;
 	}

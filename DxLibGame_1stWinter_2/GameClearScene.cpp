@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "SceneController.h"
 #include "CursorUI.h"
+#include "ScoreController.h"
 
 #include "Input.h"
 #include "Game.h"
@@ -45,11 +46,18 @@ void GameClearScene::NormalUpdate()
 void GameClearScene::FadeoutUpdate()
 {
 	_frame++;
-	if (_frame >= Game::kFadeInterval)
+	float volMul = static_cast<float>(GameclearSceneData::kFadeFrame - _frame) / GameclearSceneData::kFadeFrame;
+	int titleVol = Game::kSoundVolume * GameclearSceneData::kBGMVolMul * volMul;
+	if (titleVol >= 255) titleVol = 255;
+	ChangeVolumeSoundMem(titleVol, _clearBGMHandle);
+
+	if (_frame >= GameclearSceneData::kFadeFrame)
 	{
 		// 0(上)だった場合
 		if (!_cursor->GetCurrentPosition())
 		{
+			StopSoundMem(_clearBGMHandle);
+
 			SceneController::GetInstance().ChangeScene(std::make_shared<GamePlayScene>());
 			return;  // 自分が死んでいるのでもし
 			// 余計な処理が入っているとまずいのでreturn;
@@ -73,8 +81,11 @@ void GameClearScene::FadeDraw()
 
 	_cursor->Draw();
 
+	ScoreController& scoreController = ScoreController::GetInstance();
+	scoreController.ResultDraw();
+
 	// 文字列表示
-	DrawRotaGraph(Game::kScreenCenterWidth + 20, Game::kScreenCenterHeight - 100,
+	DrawRotaGraph(Game::kScreenCenterWidth + 20, Game::kScreenCenterHeight - 100-100,
 		1.5, 0.0f, _clearStringGraphHandle, true);
 	DrawRotaGraph(Game::kScreenCenterWidth, Game::kScreenCenterHeight + 100,
 		0.5, 0.0f, _continueHighlightStringGraphHandle, true);
@@ -83,7 +94,7 @@ void GameClearScene::FadeDraw()
 
 	// フェードイン/アウトの処理
 	// フェード割合の計算(0.0-1.0)
-	float rate = static_cast<float>(_frame) / static_cast<float>(Game::kFadeInterval);
+	float rate = static_cast<float>(_frame) / static_cast<float>(GameclearSceneData::kFadeFrame);
 	SetDrawBlendMode(DX_BLENDMODE_MULA, static_cast<int>(255 * rate));
 	DrawBox(0, 0, Game::kScreenWidth, Game::kScreenHeight, 0x000000, true);
 	// BlendModeを使った後はNOBLENDにしておくことを忘れず
@@ -99,8 +110,11 @@ void GameClearScene::NormalDraw()
 
 	_cursor->Draw();
 	
+	ScoreController& scoreController = ScoreController::GetInstance();
+	scoreController.ResultDraw();
+
 	// 文字列表示
-	DrawRotaGraph(Game::kScreenCenterWidth + 20, Game::kScreenCenterHeight - 100, 
+	DrawRotaGraph(Game::kScreenCenterWidth + 20, Game::kScreenCenterHeight - 100-100,
 		1.5, 0.0f, _clearStringGraphHandle, true);
 	DrawRotaGraph(Game::kScreenCenterWidth, Game::kScreenCenterHeight + 100, 
 		0.5, 0.0f, _continueHighlightStringGraphHandle, true);
@@ -114,7 +128,7 @@ void GameClearScene::NormalDraw()
 }
 
 GameClearScene::GameClearScene() :
-	_frame(Game::kFadeInterval),
+	_frame(GameclearSceneData::kFadeFrame),
 	_backgroundGraphHandle(0),
 	_clearStringGraphHandle(0),
 	_cursor(std::make_shared<CursorUI>()),
@@ -135,10 +149,15 @@ GameClearScene::GameClearScene() :
 	assert(_cursorDecisionHandle >= 0);
 	_cursorEffectHandle = LoadGraph(L"data/img/player/clear/ClearPlayer_Bullet.png");
 	assert(_cursorEffectHandle >= 0);
+	// bgm
+	_clearBGMHandle = LoadSoundMem(L"data/sound/bgm/ClearSceneBGM.mp3");
+	assert(_clearBGMHandle >= 0);
 
 	Vector2 pos    = GameclearSceneData::kStartCursorPos;
 	Vector2 addPos = GameclearSceneData::kAddCursorPos;
 	_cursor->Init(pos, addPos, 3.0f, 3.0f, _cursorUndecisionHandle, _cursorDecisionHandle, _cursorEffectHandle, true);
+
+	
 }
 
 GameClearScene::~GameClearScene()
@@ -150,6 +169,8 @@ GameClearScene::~GameClearScene()
 	DeleteGraph(_cursorUndecisionHandle);
 	DeleteGraph(_cursorDecisionHandle);
 	DeleteGraph(_cursorEffectHandle);
+
+	DeleteSoundMem(_clearBGMHandle);
 }
 
 void GameClearScene::Update()
@@ -160,4 +181,13 @@ void GameClearScene::Update()
 void GameClearScene::Draw()
 {
 	(this->*_nowDrawState)();
+}
+
+void GameClearScene::StartBGM()
+{
+	// bgm再生
+	PlaySoundMem(_clearBGMHandle, DX_PLAYTYPE_LOOP);
+	int titleVol = Game::kSoundVolume * GameclearSceneData::kBGMVolMul;
+	if (titleVol >= 255) titleVol = 255;
+	ChangeVolumeSoundMem(titleVol, _clearBGMHandle);
 }

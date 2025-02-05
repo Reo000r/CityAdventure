@@ -12,6 +12,12 @@ class GameSceneCamera;
 class UIController;
 class PlayerBulletController;
 
+namespace GameplaySceneData
+{
+	constexpr int kFadeFrame = 60;
+	constexpr float kBGMVolMul = 1.0f;
+}
+
 class GamePlayScene : public Scene
 {
 private:
@@ -25,6 +31,7 @@ private:
 	int _goalGraphHandle;
 	int _mapGraphHandle;
 	int _backgroundGraphHandle;
+	int _gameplayBGMHandle;
 
 	// 次のシーン
 	// 暗黙的に変換してくれるっぽい
@@ -74,5 +81,7 @@ public:
 	/// 描画全般
 	/// </summary>
 	virtual void Draw() override;
+
+	void StartBGM() override;
 };
 

@@ -10,7 +10,7 @@
 #include "Map.h"
 #include "GameSceneCamera.h"
 #include "UIController.h"
-//#include "Physics.h"
+#include "ScoreController.h"
 
 #include "Input.h"
 #include "Game.h"
@@ -27,6 +27,9 @@ void GamePlayScene::FadeinUpdate()
 
 	if (_frame <= 0)
 	{
+		ScoreController& scoreController = ScoreController::GetInstance();
+		scoreController.SetTimeCount(true);
+
 		_nowUpdateState = &GamePlayScene::NormalUpdate;
 		_nowDrawState = &GamePlayScene::NormalDraw;
 	}
@@ -39,19 +42,27 @@ void GamePlayScene::NormalUpdate()
 	_goal->Update();
 	_camera->Update();
 	_uiController->Update();
-	//Physics::GetInstance().Update();
 
-	//// シーン切り替え(デバッグ)
-	//if (Input::GetInstance().IsTrigger(PAD_INPUT_4))
-	//{
-	//	_nowUpdateState = &GamePlayScene::FadeoutUpdate;
-	//	_nowDrawState = &GamePlayScene::FadeDraw;
-	//	_frame = 0;
-	//}
+	ScoreController& scoreController = ScoreController::GetInstance();
+	scoreController.Update();
+
+	// シーン切り替え(デバッグ)
+	if (Input::GetInstance().IsTrigger(PAD_INPUT_4))
+	{
+		ScoreController& scoreController = ScoreController::GetInstance();
+		scoreController.SetTimeCount(false);
+
+		_nowUpdateState = &GamePlayScene::FadeoutUpdate;
+		_nowDrawState = &GamePlayScene::FadeDraw;
+		_frame = 0;
+	}
 
 	// プレイヤーが死んでいたらゲームオーバー処理を行う
 	if (_player->IsDead())
 	{
+		ScoreController& scoreController = ScoreController::GetInstance();
+		scoreController.SetTimeCount(false);
+		
 		_nowUpdateState = &GamePlayScene::FadeoutUpdate;
 		_nowDrawState = &GamePlayScene::FadeDraw;
 		_frame = 0;
@@ -61,6 +72,9 @@ void GamePlayScene::NormalUpdate()
 	// プレイヤーがゴールしたらゴール処理を行う
 	if (_player->IsGoal())
 	{
+		ScoreController& scoreController = ScoreController::GetInstance();
+		scoreController.SetTimeCount(false);
+
 		_nowUpdateState = &GamePlayScene::FadeoutUpdate;
 		_nowDrawState = &GamePlayScene::FadeDraw;
 		_frame = 0;
@@ -72,10 +86,20 @@ void GamePlayScene::FadeoutUpdate()
 {
 	_frame++;
 
+	float volMul = static_cast<float>(GameplaySceneData::kFadeFrame - _frame) / GameplaySceneData::kFadeFrame;
+	int titleVol = Game::kSoundVolume * GameplaySceneData::kBGMVolMul * volMul;
+	if (titleVol >= 255) titleVol = 255;
+	ChangeVolumeSoundMem(titleVol, _gameplayBGMHandle);
+
 	_camera->Update();
 
-	if (_frame >= Game::kFadeInterval)
+	if (_frame >= GameplaySceneData::kFadeFrame)
 	{
+		StopSoundMem(_gameplayBGMHandle);
+
+		ScoreController& scoreController = ScoreController::GetInstance();
+		scoreController.ResultInit();
+
 		SceneController::GetInstance().ChangeScene(_nextScene);
 		return;  // 自分が死んでいるのでもし
 		// 余計な処理が入っているとまずいのでreturn;
@@ -92,12 +116,15 @@ void GamePlayScene::FadeDraw()
 	_goal->Draw(_camera);
 	_uiController->Draw(_camera);
 
+	ScoreController& scoreController = ScoreController::GetInstance();
+	scoreController.GameDraw();
+
 	// 背景の表示
 	//DrawRotaGraph(static_cast<int>(Game::kScreenCenterWidth), static_cast<int>(Game::kScreenCenterHeight), 1.0, 0.0f, _graphHandle, true);
 
 	// フェードイン/アウトの処理
 	// フェード割合の計算(0.0-1.0)
-	float rate = static_cast<float>(_frame) / static_cast<float>(Game::kFadeInterval);
+	float rate = static_cast<float>(_frame) / static_cast<float>(GameplaySceneData::kFadeFrame);
 	SetDrawBlendMode(DX_BLENDMODE_MULA, static_cast<int>(255 * rate));
 	DrawBox(0, 0, Game::kScreenWidth, Game::kScreenHeight, 0x000000, true);
 	// BlendModeを使った後はNOBLENDにしておくことを忘れず
@@ -114,29 +141,32 @@ void GamePlayScene::NormalDraw()
 	_goal->Draw(_camera);
 	_uiController->Draw(_camera);
 
+	ScoreController& scoreController = ScoreController::GetInstance();
+	scoreController.GameDraw();
+
 	//DrawRotaGraph(static_cast<int>(Game::kScreenCenterWidth), static_cast<int>(Game::kScreenCenterHeight), 1.0, 0.0f, _graphHandle, true);
 	
 
 	// スコアを表示する予定の所
 #ifdef _DEBUG
-	DrawFormatString(0, 0, 0xffffff, L"GamePlay Scene");
+	//DrawFormatString(0, 0, 0xffffff, L"GamePlay Scene");
 
-	Vector2 strPos = { Game::kScreenWidth - 10 -32, 10 };
-	int addX = 0;
-	for (int i = 0; i < 6; i++)
-	{
-		DrawBox(static_cast<int>(strPos.x + addX),
-			static_cast<int>(strPos.y),
-			static_cast<int>(strPos.x + 24 + addX),
-			static_cast<int>(strPos.y + 32),
-			0xffffff, true);
-		addX -= 24 + 8;
-	}
+	//Vector2 strPos = { Game::kScreenWidth - 10 -32, 10 };
+	//int addX = 0;
+	//for (int i = 0; i < 6; i++)
+	//{
+	//	DrawBox(static_cast<int>(strPos.x + addX),
+	//		static_cast<int>(strPos.y),
+	//		static_cast<int>(strPos.x + 24 + addX),
+	//		static_cast<int>(strPos.y + 32),
+	//		0xffffff, true);
+	//	addX -= 24 + 8;
+	//}
 #endif // _DEBUG
 }
 
 GamePlayScene::GamePlayScene() :
-	_frame(Game::kFadeInterval),
+	_frame(GameplaySceneData::kFadeFrame),
 	_playerIdleGraphHandle(0),
 	_playerRunGraphHandle(0),
 	_playerJumpGraphHandle(0),
@@ -169,6 +199,9 @@ GamePlayScene::GamePlayScene() :
 
 	_backgroundGraphHandle = LoadGraph(L"data/img/background/Background.png");
 	assert(_backgroundGraphHandle >= 0);
+	// bgm
+	_gameplayBGMHandle = LoadSoundMem(L"data/sound/bgm/GameSceneBGM.mp3");
+	assert(_gameplayBGMHandle >= 0);
 
 	// プレイヤーに自分自身のptrを渡したい
 	//std::weak_ptr<GamePlayScene> ptr = std::weak_ptr<GamePlayScene>();
@@ -190,6 +223,11 @@ GamePlayScene::GamePlayScene() :
 	_map->Init(_mapGraphHandle, _camera);
 
 	_uiController->Init(_player);
+
+	ScoreController& scoreController = ScoreController::GetInstance();
+	scoreController.Init();
+
+	
 }
 
 GamePlayScene::~GamePlayScene()
@@ -202,6 +240,8 @@ GamePlayScene::~GamePlayScene()
 	DeleteGraph(_goalGraphHandle);
 	DeleteGraph(_mapGraphHandle);
 	DeleteGraph(_backgroundGraphHandle);
+
+	DeleteSoundMem(_gameplayBGMHandle);
 }
 
 void GamePlayScene::Update()
@@ -212,4 +252,13 @@ void GamePlayScene::Update()
 void GamePlayScene::Draw()
 {
 	(this->*_nowDrawState)();
+}
+
+void GamePlayScene::StartBGM()
+{
+	// bgm再生
+	PlaySoundMem(_gameplayBGMHandle, DX_PLAYTYPE_LOOP);
+	int titleVol = Game::kSoundVolume * GameplaySceneData::kBGMVolMul;
+	if (titleVol >= 255) titleVol = 255;
+	ChangeVolumeSoundMem(titleVol, _gameplayBGMHandle);
 }

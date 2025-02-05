@@ -22,6 +22,8 @@ namespace GameoverSceneData
 
 	// ï∂éöï\é¶ÇÃï‚ê≥íl
 
+	constexpr int kFadeFrame = 60;
+	constexpr float kBGMVolMul = 1.0f;
 }
 
 class GameOverScene : public Scene
@@ -35,6 +37,8 @@ private:
 	int _cursorUndecisionHandle;
 	int _cursorDecisionHandle;
 	int _cursorEffectHandle;
+
+	int _gameoverBGMHandle;
 
 	std::shared_ptr<CursorUI> _cursor;
 
@@ -70,5 +74,7 @@ public:
 	/// ï`âÊëSî 
 	/// </summary>
 	virtual void Draw() override;
+
+	void StartBGM() override;
 };
 

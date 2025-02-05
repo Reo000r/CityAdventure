@@ -129,6 +129,9 @@
     <ClCompile Include="Enemy02.cpp">
       <Filter>ソース ファイル\Enemy</Filter>
     </ClCompile>
+    <ClCompile Include="ScoreController.cpp">
+      <Filter>ソース ファイル\Other</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -211,6 +214,9 @@
     </ClInclude>
     <ClInclude Include="Enemy02.h">
       <Filter>ヘッダー ファイル\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreController.h">
+      <Filter>ヘッダー ファイル\Other</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

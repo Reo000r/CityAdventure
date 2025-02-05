@@ -9,6 +9,8 @@ namespace Game
 
 	constexpr int kFadeInterval = 30;
 
+	constexpr int kSoundVolume = 128;
+
 	// 何も描画しないマップ番号
 	// 何らかの理由があってMapDataからこっちに持ってきていた
 	constexpr int kEmptyChipNum = 51;

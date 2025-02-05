@@ -64,7 +64,6 @@ void Application::Run()
 		{
 		}
 	}
-
 }
 
 void Application::Terminate()

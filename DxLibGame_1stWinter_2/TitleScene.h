@@ -29,6 +29,9 @@ namespace TitleSceneData
 	constexpr int kAddCursorPosY = 0;
 
 	const Vector2 kAddCursorPos = { kAddCursorPosX, kAddCursorPosY };
+
+	constexpr int kFadeFrame = 60;
+	constexpr float kBGMVolMul = 1.0f;
 }
 
 class TitleScene : public Scene
@@ -37,6 +40,7 @@ private:
 	int _frame;
 	int _titleFadeFrameCount;
 	int _titleGraphHandle;
+	int _titleBGMHandle;
 	int _backgroundGraphHandle;
 	int _startHighlightStringGraphHandle;
 
@@ -80,5 +84,7 @@ public:
 	/// •`‰æ‘S”Ê
 	/// </summary>
 	virtual void Draw() override;
+
+	void StartBGM() override;
 };
 

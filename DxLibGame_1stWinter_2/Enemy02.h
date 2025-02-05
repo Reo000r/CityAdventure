@@ -77,6 +77,7 @@ private:
 	bool _isDead;
 	int  _deadFrameCount;
 	float _sizeMul;
+	float _angle;
 	float _alpha;
 
 	float _fallSpeed;

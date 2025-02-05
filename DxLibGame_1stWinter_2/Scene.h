@@ -20,5 +20,7 @@ public:
 	/// •`‰æ‘S”Ê
 	/// </summary>
 	virtual void Draw() abstract;
+
+	virtual void StartBGM() abstract;
 };
 

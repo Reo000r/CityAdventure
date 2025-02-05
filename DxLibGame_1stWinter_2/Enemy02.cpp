@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "PlayerBullet.h"
 #include "PlayerBulletController.h"
+#include "ScoreController.h"
 
 #include "Input.h"
 
@@ -67,12 +68,13 @@ void Enemy02::DeathUpdate()
 	_deadFrameCount++;
 
 	float maxDeadFrame = Enemy02Data::kDeathAnimTotalFrame * 2;
-	
-	if (_deadFrameCount > maxDeadFrame / 2.0f)
-	{
-		_alpha = (maxDeadFrame - _deadFrameCount / maxDeadFrame);
-		_sizeMul -= 1 * Enemy02Data::kSizeMul / maxDeadFrame;
-	}
+	_sizeMul -= 1 * Enemy02Data::kSizeMul / maxDeadFrame;
+	_angle += (_deadFrameCount / maxDeadFrame);
+	//if (_deadFrameCount > maxDeadFrame / 2.0f)
+	//{
+	//	_alpha = (maxDeadFrame - _deadFrameCount / maxDeadFrame);
+	//	_sizeMul -= 1 * Enemy02Data::kSizeMul / maxDeadFrame;
+	//}
 
 	if (_deadFrameCount > maxDeadFrame)
 	{
@@ -273,6 +275,7 @@ Enemy02::Enemy02(Vector2 pos) :
 	_isDead(false),
 	_deadFrameCount(0),
 	_sizeMul(Enemy02Data::kSizeMul),
+	_angle(0.0f),
 	_alpha(0.0f),
 	_fallSpeed(0.0f),
 	_drawPosOffset({ Enemy02Data::kDrawPosOffsetX, Enemy02Data::kDrawPosOffsetY }),
@@ -335,7 +338,7 @@ void Enemy02::Draw(std::weak_ptr<GameSceneCamera> camera)
 		x, y,
 		cutX, cutY,
 		width, height,
-		_sizeMul, 0.0,
+		_sizeMul, _angle,
 		_useHandle, true, _isReverseGraphX, false);
 
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
@@ -392,6 +395,9 @@ void Enemy02::OnDamage(int damage, bool isReverseX)
 		_useHandle = _runHandle;
 		_nowUpdateState = &Enemy02::DeathUpdate;
 		_isDead = true;
+
+		ScoreController& scoreController = ScoreController::GetInstance();
+		scoreController.AddScore(ScoreData::kEnemy02Score);
 
 		float s = _flyFrameCount / 15.0f;
 		float fallSpeed = sin(s);

@@ -42,6 +42,13 @@ void SceneController::ChangeScene(std::shared_ptr<Scene> scene)
 		// ‚È‚É‚©‚ ‚éê‡‚ÍÅŒã‚Ì—v‘f‚ð’u‚«Š·‚¦‚é
 		_scenes.back() = scene;
 	}
+
+	// ˆê‚Â‚¾‚¯bgm‚ðÄ¶(‚²‚è‰Ÿ‚µ)
+	for (auto& scene : _scenes)
+	{
+		scene->StartBGM();
+		break;
+	}
 }
 
 void SceneController::PushScene(std::shared_ptr<Scene> scene)

@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "PlayerBullet.h"
 #include "PlayerBulletController.h"
+#include "ScoreController.h"
 
 #include "Input.h"
 
@@ -547,6 +548,10 @@ void Enemy01::OnDamage(int damage, bool isReverseX)
 		_useHandle = _runHandle;
 		_nowUpdateState = &Enemy01::DeathUpdate;
 		_isDead = true;
+
+		ScoreController& scoreController = ScoreController::GetInstance();
+		scoreController.AddScore(ScoreData::kEnemy01Score);
+
 		return;
 	}
 }
