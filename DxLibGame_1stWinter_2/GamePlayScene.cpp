@@ -41,13 +41,13 @@ void GamePlayScene::NormalUpdate()
 	_uiController->Update();
 	//Physics::GetInstance().Update();
 
-	// シーン切り替え(デバッグ)
-	if (Input::GetInstance().IsTrigger(PAD_INPUT_4))
-	{
-		_nowUpdateState = &GamePlayScene::FadeoutUpdate;
-		_nowDrawState = &GamePlayScene::FadeDraw;
-		_frame = 0;
-	}
+	//// シーン切り替え(デバッグ)
+	//if (Input::GetInstance().IsTrigger(PAD_INPUT_4))
+	//{
+	//	_nowUpdateState = &GamePlayScene::FadeoutUpdate;
+	//	_nowDrawState = &GamePlayScene::FadeDraw;
+	//	_frame = 0;
+	//}
 
 	// プレイヤーが死んでいたらゲームオーバー処理を行う
 	if (_player->IsDead())

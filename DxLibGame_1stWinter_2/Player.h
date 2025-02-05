@@ -12,7 +12,7 @@ class PlayerBulletController;
 namespace PlayerData
 {
 	// ‘Ï‹v—Í
-	constexpr int kHitPoint = 15;
+	constexpr int kHitPoint = 5;
 	
 	// –³“GŽžŠÔ
 	constexpr int kUnHitTime = 60 * 2;

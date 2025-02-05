@@ -6,8 +6,8 @@ namespace GoalData
 	// 初期地点座標
 	//constexpr int kStartPosX = 512;
 	//constexpr int kStartPosY = 1024 + 8;
-	constexpr int kStartPosX = 6110;
-	constexpr int kStartPosY = 456;
+	constexpr int kStartPosX = 53 * 32 * 2.0f;
+	constexpr int kStartPosY = 34 * 32 * 2.0f + 4 * 2.0f;
 
 	// 使用する画像の幅と高さ
 	constexpr int kGraphWidth  = 48;
