@@ -46,19 +46,45 @@ void GamePlayScene::NormalUpdate()
 	ScoreController& scoreController = ScoreController::GetInstance();
 	scoreController.Update();
 
-	// シーン切り替え(デバッグ)
+#ifdef _DEBUG
+	//// シーン切り替え(デバッグ)
+	//if (Input::GetInstance().IsTrigger(PAD_INPUT_4))
+	//{
+	//	ScoreController& scoreController = ScoreController::GetInstance();
+	//	scoreController.SetTimeCount(false);
+
+	//	_nowUpdateState = &GamePlayScene::FadeoutUpdate;
+	//	_nowDrawState = &GamePlayScene::FadeDraw;
+	//	_frame = 0;
+	//}
+
+	// シーンリロード(デバッグ)
 	if (Input::GetInstance().IsTrigger(PAD_INPUT_4))
 	{
 		ScoreController& scoreController = ScoreController::GetInstance();
 		scoreController.SetTimeCount(false);
+		_nextScene = std::make_shared<GamePlayScene>();
 
 		_nowUpdateState = &GamePlayScene::FadeoutUpdate;
 		_nowDrawState = &GamePlayScene::FadeDraw;
 		_frame = 0;
 	}
+#endif // _DEBUG
 
 	// プレイヤーが死んでいたらゲームオーバー処理を行う
 	if (_player->IsDead())
+	{
+		ScoreController& scoreController = ScoreController::GetInstance();
+		scoreController.SetTimeCount(false);
+		
+		_nowUpdateState = &GamePlayScene::FadeoutUpdate;
+		_nowDrawState = &GamePlayScene::FadeDraw;
+		_frame = 0;
+		_nextScene = std::make_shared<GameOverScene>();
+	}
+
+	// プレイヤーが死んでいたらゲームオーバー処理を行う
+	if (ScoreController::GetInstance().IsTimeover())
 	{
 		ScoreController& scoreController = ScoreController::GetInstance();
 		scoreController.SetTimeCount(false);

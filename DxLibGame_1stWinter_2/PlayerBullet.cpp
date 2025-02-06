@@ -29,7 +29,8 @@ void PlayerBullet::Update(std::weak_ptr<Map> map)
 
 	_lifeTimeCount--;
 	// ‘±ŠÔ‚ğ’´‚¦‚Ä‚¢‚½‚ç
-	if (_lifeTimeCount <= 0)
+	if (_lifeTimeCount <= 0 || 
+		_pos.x <= 0.0f)
 	{
 		//”ñŠˆ«‰»
 		DisActive();

@@ -13,7 +13,7 @@ class GameSceneCamera;
 namespace
 {
 	// ’e‚ÌÅ‘å”
-	constexpr int kBulletNum = 5;
+	constexpr int kBulletNum = 6;
 }
 
 /// <summary>

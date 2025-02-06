@@ -61,7 +61,7 @@ void ScoreController::GameDraw()
 	Vector2 _drawTimePos  = { Game::kScreenWidth - 300-120, 0 };
 	Vector2 _drawScorePos = { Game::kScreenWidth - 300-120, 0+32+16 };
 	float temp = _time;
-	int time = static_cast<int>(floor(temp));
+	int time = static_cast<int>(floor(temp)) + 1;
 
 	DrawFormatStringToHandle(_drawTimePos.x, _drawTimePos.y, 0xeeeeee, _gameFontHandle, L"Time   :    %03d", time);
 	DrawFormatStringToHandle(_drawScorePos.x, _drawScorePos.y, 0xeeeeee, _gameFontHandle, L"Score:%05d", _drawScore);
@@ -128,7 +128,7 @@ void ScoreController::Reset()
 {
 	_score = 0;
 	_drawScore = 0;
-	_time = 120.0f;
+	_time = 120.0f-0.01f;
 	_playerHitpoint = 0;
 	_scoreIncludingTimeAndHitpointMul = 0.0f;
 	_rank = L"NAN";
