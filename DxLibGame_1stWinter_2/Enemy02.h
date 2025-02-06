@@ -131,7 +131,7 @@ private:
 		if (x < 0.0f) x *= -1;
 		if (y < 0.0f) y *= -1;
 		float blockNumX = 25.0f;
-		float blockNumY = 15.0f;
+		float blockNumY = 18.0f;
 		int blockSize = 32;
 		float blockMul = 2.0f;
 		//return (_pos.Distance(_pos, playerPos) > Enemy01Data::kActivationRange);
