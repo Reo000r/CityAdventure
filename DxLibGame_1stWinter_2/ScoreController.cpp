@@ -10,6 +10,7 @@ ScoreController::ScoreController() :
 	_drawScore(0),
 	_time(0.0f),
 	_playerHitpoint(0),
+	_addScore(1.0f),
 	_scoreIncludingTimeAndHitpointMul(0.0f),
 	_rank(L"NAN"),
 	_isCount(false),
@@ -45,7 +46,7 @@ void ScoreController::Update()
 
 	UpdateScore();
 
-	if (_score > _drawScore) _drawScore += 7;
+	if (_score > _drawScore) _drawScore += _addScore;
 	if (_score < _drawScore) _drawScore = _score;
 
 	if (_time <= 0.0f && !_isTimeover)
@@ -79,8 +80,9 @@ void ScoreController::DebugDraw()
 
 	DrawFormatString(0, 256, 0xffffff, L"_time : %f", _time);
 	DrawFormatString(0, 256 + 16 * 1, 0xffffff, L"_score : %d", _score);
-	DrawFormatString(0, 256 + 16 * 2, 0xffffff, L"_scoreIncludingTime : %f", _scoreIncludingTimeAndHitpointMul);
-	DrawFormatString(0, 256 + 16 * 3, 0xffffff, L"_playerHitpoint : %d", _playerHitpoint);
+	DrawFormatString(0, 256 + 16 * 2, 0xffffff, L"_scoreIncludingTime : %f", _score + (_time * ScoreData::kTimeToScoreMul));
+	DrawFormatString(0, 256 + 16 * 3, 0xffffff, L"HitpointMulScore : %f", _scoreIncludingTimeAndHitpointMul);
+	DrawFormatString(0, 256 + 16 * 4, 0xffffff, L"_playerHitpoint : %d", _playerHitpoint);
 
 #endif // _DEBUG
 }
@@ -128,7 +130,7 @@ void ScoreController::Reset()
 {
 	_score = 0;
 	_drawScore = 0;
-	_time = 120.0f-0.01f;
+	_time = ScoreData::kStartTime;
 	_playerHitpoint = 0;
 	_scoreIncludingTimeAndHitpointMul = 0.0f;
 	_rank = L"NAN";

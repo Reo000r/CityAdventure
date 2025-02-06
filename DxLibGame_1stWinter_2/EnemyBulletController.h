@@ -1,42 +1,44 @@
 #pragma once
 #include "Vector2.h"
 #include "Game.h"
-//#include "PlayerBullet.h"
 
 #include <vector>
 #include <memory>
 
-class PlayerBullet;
+class EnemyBullet;
+class Player;
 class Map;
 class GameSceneCamera;
 
-namespace PlayerBulletControllerData
+namespace EnemyBulletControllerData
 {
 	// 弾の最大数
-	constexpr int kBulletNum = 6;
+	constexpr int kBulletNum = 8;
 }
 
 /// <summary>
 /// プレイヤーの弾を管理するクラス
 /// </summary>
-class PlayerBulletController
+class EnemyBulletController
 {
 private:
 
 	int _bulletGraphHandle;
 
 	// 全ての弾を管理
-	std::vector<std::shared_ptr<PlayerBullet>> _bulletList;
+	std::vector<std::shared_ptr<EnemyBullet>> _bulletList;
+
+	std::weak_ptr<Player> _player;
 
 public:
 
-	PlayerBulletController();
-	~PlayerBulletController();
+	EnemyBulletController();
+	~EnemyBulletController();
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Init();
+	void Init(std::weak_ptr<Player> player);
 
 	/// <summary>
 	/// 内部変数の更新
@@ -59,7 +61,7 @@ public:
 	/// <param name="rect"></param>
 	/// <param name="returnBullet"></param>
 	/// <returns>当たったらtrue</returns>
-	bool IsHitBullet(Game::Rect rect, std::weak_ptr<PlayerBullet>& returnBullet);
+	bool IsHitBullet(Game::Rect rect, std::weak_ptr<EnemyBullet>& returnBullet);
 
 };
 

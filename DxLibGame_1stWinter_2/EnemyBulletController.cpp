@@ -1,49 +1,51 @@
-#include "PlayerBulletController.h"
-#include "PlayerBullet.h"
+#include "EnemyBulletController.h"
+#include "EnemyBullet.h"
 #include "Map.h"
 #include "GameSceneCamera.h"
 
 #include <cassert>
 
-PlayerBulletController::PlayerBulletController() :
+EnemyBulletController::EnemyBulletController() :
 	_bulletGraphHandle(0)
 {
 }
 
-PlayerBulletController::~PlayerBulletController()
+EnemyBulletController::~EnemyBulletController()
 {
 	DeleteGraph(_bulletGraphHandle);
 }
 
-void PlayerBulletController::Init()
+void EnemyBulletController::Init(std::weak_ptr<Player> player)
 {
+	_player = player;
+
 	// 弾のグラフィックをロード
-	_bulletGraphHandle = LoadGraph(L"data/img/player/normal/NormalPlayer_Bullet.png");
+	_bulletGraphHandle = LoadGraph(L"data/img/enemy/bossenemy/BossEnemy_Bullet.png");
 	assert(_bulletGraphHandle >= 0);
 
 	// 弾を定数の数だけ生成
-	for (int i = 0; i < PlayerBulletControllerData::kBulletNum; i++)
+	for (int i = 0; i < EnemyBulletControllerData::kBulletNum; i++)
 	{
 		// 生成と初期化、リストへの追加を行う
 		// std::shared_ptr<PlayerBullet>
-		auto bullet = std::make_shared<PlayerBullet>(_bulletGraphHandle);
-		bullet->Init();
+		auto bullet = std::make_shared<EnemyBullet>(_bulletGraphHandle);
+		bullet->Init(_player);
 		_bulletList.push_back(bullet);
 	}
 }
 
-void PlayerBulletController::Update(std::weak_ptr<Map> map)
+void EnemyBulletController::Update(std::weak_ptr<Map> map)
 {
 	for (auto& bullet : _bulletList)
 	{
 		// 非活性化状態なら飛ばす
 		if (!bullet->GetActiveStats()) continue;
-		
+
 		bullet->Update(map);
 	}
 }
 
-void PlayerBulletController::Draw(std::weak_ptr<GameSceneCamera> camera)
+void EnemyBulletController::Draw(std::weak_ptr<GameSceneCamera> camera)
 {
 	for (auto& bullet : _bulletList)
 	{
@@ -54,7 +56,7 @@ void PlayerBulletController::Draw(std::weak_ptr<GameSceneCamera> camera)
 	}
 }
 
-void PlayerBulletController::AddBullet(Vector2 pos, bool isReverse)
+void EnemyBulletController::AddBullet(Vector2 pos, bool isReverse)
 {
 	// 非活性化しているものを一つだけ活性化させる
 	// 関数を呼びtrue なら成功(活性化できた)
@@ -69,7 +71,7 @@ void PlayerBulletController::AddBullet(Vector2 pos, bool isReverse)
 	}
 }
 
-bool PlayerBulletController::IsHitBullet(Game::Rect rect, std::weak_ptr<PlayerBullet>& returnBullet)
+bool EnemyBulletController::IsHitBullet(Game::Rect rect, std::weak_ptr<EnemyBullet>& returnBullet)
 {
 	// 全ての弾と当たり判定を行う
 	for (auto& bullet : _bulletList)

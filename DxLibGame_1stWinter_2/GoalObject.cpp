@@ -7,7 +7,9 @@ GoalObject::GoalObject() :
 	_drawPosOffset(GoalData::kDrawPosOffsetX, GoalData::kDrawPosOffsetY),
 	_graphHandle(0),
 	_animFrameCount(0),
-	_isReverseGraphX(false)
+	_isReverseGraphX(false),
+	_isActive(false),
+	_alpha(0.0f)
 {
 }
 
@@ -24,6 +26,14 @@ void GoalObject::Init(int graphHandle)
 
 void GoalObject::Update()
 {
+	if (!_isActive) return;
+
+	if (_alpha < 1.0f)
+	{
+		_alpha += 1 / (60.0f * 2);
+		if (_alpha > 1.0f) _alpha = 1.0f;
+	}
+
 	_animFrameCount++;
 
 	// アニメーションの合計フレーム数を超えたら最初に戻す
@@ -36,6 +46,8 @@ void GoalObject::Update()
 
 void GoalObject::Draw(std::weak_ptr<GameSceneCamera> camera) const
 {
+	if (!_isActive) return;
+
 	// グラフィックの切り出し位置(X座標)を計算する
 	int animNo = _animFrameCount / GoalData::kSingleAnimFrame;
 
@@ -54,12 +66,15 @@ void GoalObject::Draw(std::weak_ptr<GameSceneCamera> camera) const
 	// 表示倍率
 	int sizeMul = GoalColData::kSizeMul;
 
+
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(255 * _alpha));
 	DrawRectRotaGraph(
 		x, y,
 		cutX, cutY,
 		width, height,
 		sizeMul, 0.0,
 		_graphHandle, true, _isReverseGraphX, false);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 #ifdef _DEBUG
 
@@ -67,4 +82,14 @@ void GoalObject::Draw(std::weak_ptr<GameSceneCamera> camera) const
 	DispCol(camera);
 	
 #endif // _DEBUG
+}
+
+bool GoalObject::Active()
+{
+	if (_isActive) return false;
+
+	_isActive = true;
+	_alpha = 0.0f;
+
+	return true;
 }

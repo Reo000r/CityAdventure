@@ -6,8 +6,8 @@ namespace GoalData
 	// 初期地点座標
 	//constexpr int kStartPosX = 512;
 	//constexpr int kStartPosY = 1024 + 8;
-	constexpr int kStartPosX = 53 * 32 * 2.0f;
-	constexpr int kStartPosY = 34 * 32 * 2.0f + 4 * 2.0f;
+	constexpr int kStartPosX = 72 * 32 * 2.0f;
+	constexpr int kStartPosY =  3 * 32 * 2.0f + 4 * 2.0f;
 
 	// 使用する画像の幅と高さ
 	constexpr int kGraphWidth  = 48;
@@ -50,6 +50,9 @@ class GoalObject : public BoxCollider
 	int _graphHandle;
 	int _animFrameCount;
 	bool _isReverseGraphX;
+
+	bool _isActive;
+	float _alpha;
 
 	Vector2 _drawPosOffset;
 
@@ -100,5 +103,9 @@ public:
 		ans.height = GoalColData::kColHeight;
 		return ans;
 	}
+
+	bool Active();
+
+	bool IsActive() { return _isActive; }
 };
 

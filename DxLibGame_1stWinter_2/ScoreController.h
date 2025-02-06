@@ -5,22 +5,24 @@
 
 namespace ScoreData
 {
-	// 敵 200 300
-	// タイム 30/1s
-	// 残HP *0.1 (+1)
-	// 敵 8900
-	// タイム 2100/70s
-	// HP 5  *1.5
-	// 最大スコア 約16500
-	constexpr int kRankSSSBorder = 16500;
-	constexpr int kRankSSBorder = 16000;
-	constexpr int kRankSBorder = 15000;
-	constexpr int kRankABorder = 13000;
-	constexpr int kRankBBorder = 10000;
-	constexpr int kRankCBorder = 5000;
+	// ランクボーダー
+	constexpr int kRankSSSBorder = 66666;
+	constexpr int kRankSSBorder = 60000;
+	constexpr int kRankSBorder = 50000;
+	constexpr int kRankABorder = 40000;
+	constexpr int kRankBBorder = 30000;
+	constexpr int kRankCBorder = 15000;
 
 	constexpr int kEnemy01Score = 200;
 	constexpr int kEnemy02Score = 300;
+	constexpr int kBossScore = 5000;
+
+	constexpr float kTimeToScoreMul = 30.0f;
+
+	constexpr float kMaxAddScore = 30.0f - 0.01f;
+	constexpr float kAddScoreSpeed = 3.0f - 0.01f;
+
+	constexpr float kStartTime = 300.0f - 0.01f;
 }
 
 /// <summary>
@@ -39,6 +41,8 @@ private:
 	int _drawScore;
 	float _time;
 	int _playerHitpoint;
+
+	int _addScore;
 
 	// time含めたスコア
 	float _scoreIncludingTimeAndHitpointMul;
@@ -85,6 +89,8 @@ public:
 	void AddScore(int score)
 	{
 		_score += score;
+		_addScore = (_score - _drawScore) * (ScoreData::kAddScoreSpeed / 60.0f);
+		if (_addScore > ScoreData::kMaxAddScore) _addScore = ScoreData::kMaxAddScore;
 	}
 
 	// カウントのオンオフ切り替え

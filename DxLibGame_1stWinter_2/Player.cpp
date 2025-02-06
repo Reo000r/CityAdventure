@@ -652,15 +652,17 @@ bool Player::IsHitTop()
 
 bool Player::IsHitGoal() const
 {
-	// 自分(敵)の矩形情報を取得
+	if (!_goal.lock()->IsActive()) return false;
+
+	// 自分の矩形情報を取得
 	Game::Rect rect = GetRect();
-	// プレイヤーの当たり判定を取得
-	Game::Rect playerRect = _goal.lock()->GetRect();
+	// 当たり判定を取得
+	Game::Rect goalRect = _goal.lock()->GetRect();
 
 	// 弾と当たり判定
 	bool isHit = !(
-		(rect.top >= playerRect.bottom || rect.bottom <= playerRect.top) ||
-		(rect.left >= playerRect.right || rect.right <= playerRect.left));
+		(rect.top >= goalRect.bottom || rect.bottom <= goalRect.top) ||
+		(rect.left >= goalRect.right || rect.right  <= goalRect.left));
 	
 	return isHit;
 }

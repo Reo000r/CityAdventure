@@ -1,7 +1,9 @@
 #include "EnemyController.h"
 #include "Enemy01.h"
 #include "Enemy02.h"
+#include "BossEnemy.h"
 #include "PlayerBulletController.h"
+#include "EnemyBulletController.h"
 
 #include <cassert>
 
@@ -11,7 +13,10 @@ EnemyController::EnemyController() :
 	_walkEnemyFallGraphHandle(0),
 	_flyEnemyIdleGraphHandle(0),
 	_flyEnemyRunGraphHandle(0),
-	_flyEnemyDeathGraphHandle(0)
+	_flyEnemyDeathGraphHandle(0),
+	_bossEnemyIdleGraphHandle(0),
+	_bossEnemyRunGraphHandle(0),
+	_bossEnemyDeathGraphHandle(0)
 {
 }
 
@@ -23,13 +28,17 @@ EnemyController::~EnemyController()
 	DeleteGraph(_flyEnemyIdleGraphHandle);
 	DeleteGraph(_flyEnemyRunGraphHandle);
 	DeleteGraph(_flyEnemyDeathGraphHandle);
+	DeleteGraph(_bossEnemyIdleGraphHandle);
+	DeleteGraph(_bossEnemyRunGraphHandle);
+	DeleteGraph(_bossEnemyDeathGraphHandle);
 }
 
-void EnemyController::Init(std::weak_ptr<Map> map, std::weak_ptr<Player> player, std::weak_ptr<PlayerBulletController> playerBulletController)
+void EnemyController::Init(std::weak_ptr<Map> map, std::weak_ptr<Player> player, std::weak_ptr<PlayerBulletController> playerBulletController,std::weak_ptr<EnemyBulletController> enemyBulletController)
 {
 	_map = map;
 	_player = player;
 	_playerBulletController = playerBulletController;
+	_enemyBulletController = enemyBulletController;
 
 	// 敵のグラフィックをロード
 	_walkEnemyIdleGraphHandle = LoadGraph(L"data/img/enemy/walkenemy/WalkEnemy_Idle.png");
@@ -45,6 +54,13 @@ void EnemyController::Init(std::weak_ptr<Map> map, std::weak_ptr<Player> player,
 	assert(_flyEnemyRunGraphHandle >= 0);
 	_flyEnemyDeathGraphHandle = LoadGraph(L"data/img/enemy/flyenemy/FlyEnemy_Death.png");
 	assert(_flyEnemyDeathGraphHandle >= 0);
+
+	_bossEnemyIdleGraphHandle = LoadGraph(L"data/img/enemy/bossenemy/BossEnemy_Idle.png");
+	assert(_bossEnemyIdleGraphHandle >= 0);
+	_bossEnemyRunGraphHandle = LoadGraph(L"data/img/enemy/bossenemy/BossEnemy_Run.png");
+	assert(_bossEnemyRunGraphHandle >= 0);
+	_bossEnemyDeathGraphHandle = LoadGraph(L"data/img/enemy/bossenemy/BossEnemy_Death.png");
+	assert(_bossEnemyDeathGraphHandle >= 0);
 	
 	// 敵を登録されている初期位置の数だけ生成
 	for (auto& enemyData : _walkEnemyData)
@@ -78,6 +94,24 @@ void EnemyController::Init(std::weak_ptr<Map> map, std::weak_ptr<Player> player,
 		enemy->Active(enemyData.pos, enemyData.isReverse);
 		_flyEnemyList.push_back(enemy);
 	}
+	// 敵を登録されている初期位置の数だけ生成
+	for (auto& enemyData : _bossFlyEnemyData)
+	{
+		// マップチップ番号に合わせているので実際の座標にする
+		int mapSize = 32;
+		float mapMul = 2.0f;
+		enemyData.pos *= mapSize * mapMul;
+		// 補正
+		//enemyData.pos.y += 4 * mapMul;
+
+		// 生成と初期化、リストへの追加を行う
+		auto enemy = std::make_shared<BossEnemy>(enemyData.pos);
+		enemy->Init(_map, _player, _playerBulletController, _bossEnemyIdleGraphHandle, _bossEnemyRunGraphHandle, _bossEnemyDeathGraphHandle);
+		enemy->Active(enemyData.pos, enemyData.isReverse);
+		enemy->SetEnemyBulletController(_enemyBulletController);
+		_bossEnemyList.push_back(enemy);
+	}
+	_enemyBulletController.lock()->Init(_player);
 }
 
 void EnemyController::Update()
@@ -94,6 +128,13 @@ void EnemyController::Update()
 		if (!enemy->GetActiveStats()) continue;
 		enemy->Update();
 	}
+	for (auto& enemy : _bossEnemyList)
+	{
+		// 活性化状態の敵のみ実行
+		if (!enemy->GetActiveStats()) continue;
+		enemy->Update();
+	}
+	_enemyBulletController.lock()->Update(_map);
 }
 
 void EnemyController::Draw(std::weak_ptr<GameSceneCamera> camera)
@@ -110,4 +151,23 @@ void EnemyController::Draw(std::weak_ptr<GameSceneCamera> camera)
 		if (!enemy->GetActiveStats()) continue;
 		enemy->Draw(camera);
 	}
+	for (auto& enemy : _bossEnemyList)
+	{
+		// 活性化状態の敵のみ実行
+		if (!enemy->GetActiveStats()) continue;
+		enemy->Draw(camera);
+	}
+	_enemyBulletController.lock()->Draw(camera);
+}
+
+bool EnemyController::IsAllBossKill()
+{
+	bool ans = true;
+	for (auto& boss : _bossEnemyList)
+	{
+		ans = boss->IsDead();
+		if (!ans) break;
+	}
+
+	return ans;
 }

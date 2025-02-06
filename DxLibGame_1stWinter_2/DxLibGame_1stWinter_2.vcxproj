@@ -144,11 +144,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="BossEnemy.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="CursorUI.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Enemy01.cpp" />
     <ClCompile Include="Enemy02.cpp" />
+    <ClCompile Include="EnemyBullet.cpp" />
+    <ClCompile Include="EnemyBulletController.cpp" />
     <ClCompile Include="EnemyController.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameClearScene.cpp" />
@@ -173,11 +176,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="BossEnemy.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="CursorUI.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Enemy01.h" />
     <ClInclude Include="Enemy02.h" />
+    <ClInclude Include="EnemyBullet.h" />
+    <ClInclude Include="EnemyBulletController.h" />
     <ClInclude Include="EnemyController.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameClearScene.h" />

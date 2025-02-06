@@ -12,7 +12,7 @@ class PlayerBulletController;
 namespace PlayerData
 {
 	// ‘Ï‹v—Í
-	constexpr int kHitPoint = 5;
+	constexpr int kHitPoint = 10;
 	
 	// –³“GŠÔ
 	constexpr int kUnHitTime = 60 * 2;
@@ -22,8 +22,10 @@ namespace PlayerData
 	//constexpr int kDeadHeight = 1024 + 192 + kColWidth * 0.5f;
 
 	// ‰Šú’n“_À•W
-	constexpr int kStartPosX = 360;
-	constexpr int kStartPosY = 2240;
+	constexpr int kStartPosX = 5  * 32 * 2.0f;
+	constexpr int kStartPosY = 35 * 32 * 2.0f;
+	//constexpr int kStartPosX = 72 * 32 * 2.0f;
+	//constexpr int kStartPosY =  6 * 32 * 2.0f;
 
 
 

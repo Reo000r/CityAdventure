@@ -6,6 +6,7 @@
 
 class Player;
 class EnemyController;
+class EnemyBulletController;
 class GoalObject;
 class Map;
 class GameSceneCamera;
@@ -40,6 +41,7 @@ private:
 	std::shared_ptr<Player> _player;
 	std::shared_ptr<PlayerBulletController> _playerBulletController;
 	std::shared_ptr<EnemyController> _enemyController;
+	std::shared_ptr<EnemyBulletController> _enemyBulletController;
 	std::shared_ptr<GoalObject> _goal; // map‚Æ‚Ü‚Æ‚ß‚½‚©‚Á‚½
 	std::shared_ptr<Map> _map;
 	std::shared_ptr<GameSceneCamera> _camera;

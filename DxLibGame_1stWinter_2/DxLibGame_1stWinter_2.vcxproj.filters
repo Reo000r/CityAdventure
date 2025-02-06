@@ -49,6 +49,12 @@
     <Filter Include="ヘッダー ファイル\UI">
       <UniqueIdentifier>{ba2571e2-cce8-44f1-a24e-98cf0db303c5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Enemy\Bullet">
+      <UniqueIdentifier>{3104bcca-970d-482a-8f82-76d87cbef875}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Enemy\Bullet">
+      <UniqueIdentifier>{1cc20e34-fef2-4f44-9f04-ba177baa2c59}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -131,6 +137,15 @@
     </ClCompile>
     <ClCompile Include="ScoreController.cpp">
       <Filter>ソース ファイル\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="BossEnemy.cpp">
+      <Filter>ソース ファイル\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyBulletController.cpp">
+      <Filter>ソース ファイル\Enemy\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyBullet.cpp">
+      <Filter>ソース ファイル\Enemy\Bullet</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -217,6 +232,15 @@
     </ClInclude>
     <ClInclude Include="ScoreController.h">
       <Filter>ヘッダー ファイル\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="BossEnemy.h">
+      <Filter>ヘッダー ファイル\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyBullet.h">
+      <Filter>ヘッダー ファイル\Enemy\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyBulletController.h">
+      <Filter>ヘッダー ファイル\Enemy\Bullet</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -4,27 +4,28 @@
 #include <memory>
 
 class Map;
+class Player;
 
-namespace PlayerBulletData
+namespace EnemyBulletData
 {
 	// 攻撃力
-	constexpr int kAddDamageAmount = 1;
+	constexpr int kAddDamageAmount = 2;
 
 
 
-	constexpr float kSizeMul = 2.0f;
+	constexpr float kSizeMul = 3.0f;
 
 	// 使用する画像のサイズ
-	constexpr int kGraphWidth  = 16;
+	constexpr int kGraphWidth = 16;
 	constexpr int kGraphHeight = 16;
-	
+
 	// 当たり判定の幅と高さ
-	constexpr int kColWidth  = static_cast<int>(16 * kSizeMul);
-	constexpr int kColHeight = static_cast<int>(6 * kSizeMul);
+	constexpr int kColWidth = static_cast<int>(16 * kSizeMul);
+	constexpr int kColHeight = static_cast<int>(16 * kSizeMul);
 
 	// 描画時の補正値
 	constexpr int kDrawPosOffsetX = 0;
-	constexpr int kDrawPosOffsetY = 6;
+	constexpr int kDrawPosOffsetY = 0;
 
 	// 生成位置の補正値
 	// プレイヤーの判定情報持ってきたい
@@ -34,7 +35,7 @@ namespace PlayerBulletData
 	const Vector2 kActivePosOffset = { kActivePosOffsetX,kActivePosOffsetY };
 
 	//アニメーション1コマのフレーム数
-	constexpr int kSingleAnimFrame = 2;
+	constexpr int kSingleAnimFrame = 4;
 
 	// アニメーションのコマ数
 	constexpr int kAnimNum = 4;
@@ -43,13 +44,13 @@ namespace PlayerBulletData
 	constexpr int kAnimTotalFrame = kAnimNum * kSingleAnimFrame;
 
 	// 移動速度
-	constexpr float kMoveSpeed = 4.5f * kSizeMul;
+	constexpr float kMoveSpeed = 2.0f * kSizeMul;
 
 	// 持続時間
-	constexpr int kLifeTime = 90;
+	constexpr int kLifeTime = 120;
 }
 
-class PlayerBullet : public BoxCollider
+class EnemyBullet : public BoxCollider
 {
 private:
 	int _graphHandle;
@@ -58,7 +59,7 @@ private:
 	bool _isReverseGraphX;
 	// 0になったら非活性化
 	int _lifeTimeCount;
-	
+
 	// trueなら活性化
 	// UpdateとDrawとDisActiveを受け付ける
 	// falseなら非活性化
@@ -67,20 +68,25 @@ private:
 
 	// _posは中心
 	Vector2 _vel;
+	Vector2 _dir;
 	// 描画時の補正値(固定値)
 	// グラフィックのずれを直す為のもの
 	// 下に3/6ドットずれている
 	Vector2 _drawPosOffset;
 
+	std::weak_ptr<Player> _player;
+
+	bool IsHitPlayer();
+
 public:
 
-	PlayerBullet(int graphHandle);
-	~PlayerBullet();
+	EnemyBullet(int graphHandle);
+	~EnemyBullet();
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Init();
+	void Init(std::weak_ptr<Player> player);
 
 	/// <summary>
 	/// 内部変数の更新
@@ -111,6 +117,6 @@ public:
 	/// 攻撃力を取得
 	/// </summary>
 	/// <returns></returns>
-	int GetDamage() const { return PlayerBulletData::kAddDamageAmount; }
+	int GetDamage() const { return EnemyBulletData::kAddDamageAmount; }
 };
 

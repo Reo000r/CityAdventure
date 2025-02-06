@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "PlayerBulletController.h"
 #include "EnemyController.h"
+#include "EnemyBulletController.h"
 #include "GoalObject.h"
 #include "Map.h"
 #include "GameSceneCamera.h"
@@ -45,7 +46,16 @@ void GamePlayScene::NormalUpdate()
 
 	ScoreController& scoreController = ScoreController::GetInstance();
 	scoreController.Update();
-
+	
+	// 処理が少し軽くなると思ってのネスト
+	if (!_goal->IsActive())
+	{
+		if (_enemyController->IsAllBossKill())
+		{
+			_goal->Active();
+		}
+	}
+	
 #ifdef _DEBUG
 	//// シーン切り替え(デバッグ)
 	//if (Input::GetInstance().IsTrigger(PAD_INPUT_4))
@@ -203,6 +213,7 @@ GamePlayScene::GamePlayScene() :
 	_player(std::make_shared<Player>()),
 	_playerBulletController(std::make_shared<PlayerBulletController>()),
 	_enemyController(std::make_shared<EnemyController>()),
+	_enemyBulletController(std::make_shared<EnemyBulletController>()),
 	_goal(std::make_shared<GoalObject>()),
 	_map(std::make_shared<Map>()),
 	_camera(std::make_shared<GameSceneCamera>(*_player)),
@@ -242,7 +253,7 @@ GamePlayScene::GamePlayScene() :
 		_playerFallGraphHandle,
 		_playerDeathGraphHandle);
 
-	_enemyController->Init(_map, _player, _playerBulletController);
+	_enemyController->Init(_map, _player, _playerBulletController, _enemyBulletController);
 
 	_goal->Init(_goalGraphHandle);
 
