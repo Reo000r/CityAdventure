@@ -1,11 +1,13 @@
 #pragma once
 #include "Enemy.h"
 #include "Player.h"
+#include "Game.h"
 
 class EnemyBulletController;
 
 namespace BossEnemyData
 {
+#ifdef LOAD_DEBUG_STAGE
 	// 耐久力
 	constexpr int kHitPoint = 40;
 
@@ -72,6 +74,74 @@ namespace BossEnemyData
 
 	// 初期位置補正
 	constexpr int kStartPosOffset = kRadMul * kSizeMul * 2.5f;
+#else
+
+	// 耐久力
+	constexpr int kHitPoint = 15;
+
+	// 攻撃力
+	constexpr int kAddDamageAmount = 1;
+
+
+
+	constexpr float kSizeMul = 8.0f;
+
+	// キャラクターグラフィックの幅と高さ
+	constexpr int kGraphWidth = 32;
+	constexpr int kGraphHeight = 32;
+
+	// 描画時の補正値
+	constexpr int kDrawPosOffsetX = 0;
+	constexpr int kDrawPosOffsetY = -18;
+	// 判定の幅と高さ
+	constexpr int kColWidth = 16 * kSizeMul;
+	constexpr int kColHeight = 16 * kSizeMul;
+	// 当たり判定の補正値
+	constexpr int kColPosOffsetX = 0;
+	constexpr int kColPosOffsetY = 0;//(kColHeight / 2) * -1;
+
+	// キャラクターの幅と高さ
+	constexpr int kWidth = kGraphWidth * kSizeMul;
+	constexpr int kHeight = kGraphHeight * kSizeMul;
+
+	//アニメーション1コマのフレーム数
+	constexpr int kSingleAnimFrame = 5;
+
+	// アニメーションのコマ数
+	constexpr int kFlyAnimNum = 6;
+	constexpr int kDeathAnimNum = 4;
+
+	// アニメーション一周当たりのフレーム数
+	constexpr int kFlyAnimTotalFrame = kFlyAnimNum * kSingleAnimFrame;
+	constexpr int kDeathAnimTotalFrame = kDeathAnimNum * kSingleAnimFrame;
+
+	// 移動速度
+	constexpr float kMoveSpeed = 2.0f * kSizeMul;
+
+	// 重力
+	constexpr float kFallSpeed = 0.4f * kSizeMul;
+
+	// プレイヤーがこの距離内にいたら動く
+	constexpr int kActivationRange = 1000;
+
+
+	// 落下速度上限
+	constexpr float kMaxFallSpeed = 5.0f;
+
+
+	// 弾を撃つ間隔
+	constexpr int kBulletCooltime = 120;
+
+	// 回転速度
+	// 大きいほど遅い
+	constexpr float kRotateSpeed = 40.0f * 1.5f;
+
+	// 半径の大きさ倍率
+	constexpr float kRadMul = 0.8f * kSizeMul;
+
+	// 初期位置補正
+	constexpr int kStartPosOffset = kRadMul * kSizeMul * 2.5f;
+#endif //LOAD_DEBUG_STAGE
 }
 
 class BossEnemy : public Enemy

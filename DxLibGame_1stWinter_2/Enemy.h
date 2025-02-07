@@ -27,6 +27,8 @@ protected:
 	// Active‚ğó‚¯•t‚¯‚é
 	bool _isActive;
 
+	int _blinkFrameCount;
+
 	// _pos‚Í’†S
 	Vector2 _vel;
 

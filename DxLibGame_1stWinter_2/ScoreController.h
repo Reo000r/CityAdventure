@@ -1,11 +1,13 @@
 #pragma once
 #include "Player.h"
+#include "Game.h"
 
 #include <string>
 
 namespace ScoreData
 {
 	// ランクボーダー
+#ifdef LOAD_DEBUG_STAGE
 	constexpr int kRankSSSBorder = 66666;
 	constexpr int kRankSSBorder = 60000;
 	constexpr int kRankSBorder = 50000;
@@ -23,6 +25,25 @@ namespace ScoreData
 	constexpr float kAddScoreSpeed = 3.0f - 0.01f;
 
 	constexpr float kStartTime = 300.0f - 0.01f;
+#else
+	constexpr int kRankSSSBorder = 34000;
+	constexpr int kRankSSBorder  = 32000;
+	constexpr int kRankSBorder   = 29000;
+	constexpr int kRankABorder   = 25000;
+	constexpr int kRankBBorder   = 15000;
+	constexpr int kRankCBorder   = 10000;
+
+	constexpr int kEnemy01Score = 200;
+	constexpr int kEnemy02Score = 300;
+	constexpr int kBossScore = 5000;
+
+	constexpr float kTimeToScoreMul = 30.0f;
+
+	constexpr float kMaxAddScore = 30.0f - 0.01f;
+	constexpr float kAddScoreSpeed = 3.0f - 0.01f;
+
+	constexpr float kStartTime = 150.0f - 0.01f;
+#endif // LOAD_DEBUG_STAGE
 }
 
 /// <summary>

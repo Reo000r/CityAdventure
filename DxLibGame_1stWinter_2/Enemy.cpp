@@ -7,6 +7,7 @@ Enemy::Enemy(Vector2 pos, Vector2 offset, Game::Size size, int hitPoint) :
 	_hitPoint(hitPoint),
 	_isReverseGraphX(false),
 	_isActive(false),
+	_blinkFrameCount(0),
 	_vel({0.0f, 0.0f})
 {
 }

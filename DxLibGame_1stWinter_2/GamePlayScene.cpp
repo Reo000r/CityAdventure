@@ -1,6 +1,7 @@
 #include "GamePlayScene.h"
 #include "GameClearScene.h"  // 遷移先のシーン
 #include "GameOverScene.h"   // 遷移先のシーン
+#include "TitleScene.h"   // 遷移先のシーン
 #include "Scene.h"
 #include "SceneController.h"
 #include "Player.h"
@@ -67,9 +68,11 @@ void GamePlayScene::NormalUpdate()
 	//	_nowDrawState = &GamePlayScene::FadeDraw;
 	//	_frame = 0;
 	//}
+#endif // _DEBUG
 
-	// シーンリロード(デバッグ)
-	if (Input::GetInstance().IsTrigger(PAD_INPUT_4))
+#ifdef RELOAD_GAME_STAGE
+	// シーンリロード
+	if (Input::GetInstance().IsTrigger(INPUTRIGHTMENU))
 	{
 		ScoreController& scoreController = ScoreController::GetInstance();
 		scoreController.SetTimeCount(false);
@@ -79,7 +82,18 @@ void GamePlayScene::NormalUpdate()
 		_nowDrawState = &GamePlayScene::FadeDraw;
 		_frame = 0;
 	}
-#endif // _DEBUG
+	// タイトルへ
+	if (Input::GetInstance().IsTrigger(INPUTLEFTMENU))
+	{
+		ScoreController& scoreController = ScoreController::GetInstance();
+		scoreController.SetTimeCount(false);
+		_nextScene = std::make_shared<TitleScene>();
+
+		_nowUpdateState = &GamePlayScene::FadeoutUpdate;
+		_nowDrawState = &GamePlayScene::FadeDraw;
+		_frame = 0;
+	}
+#endif // RELOAD_GAME_STAGE
 
 	// プレイヤーが死んでいたらゲームオーバー処理を行う
 	if (_player->IsDead())

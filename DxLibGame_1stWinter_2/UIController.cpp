@@ -34,7 +34,7 @@ void UIController::Init(std::weak_ptr<Player> player)
 		auto hpUI = std::make_shared<PlayerHitpointUI>(pos, i);
 		hpUI->Init(_player, _playerUndamagedHitpointGraphHandle, _playerDamagedHitpointGraphHandle);
 		_hpList.push_back(hpUI);
-		pos.x += 48 + 4;
+		pos.x += (PlayerHitpointUIData::kUndamageGraphWidth + 1) * PlayerHitpointUIData::kUndamageSizeMul;
 	}
 
 }

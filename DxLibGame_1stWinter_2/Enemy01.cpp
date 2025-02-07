@@ -33,6 +33,9 @@ void Enemy01::IdleUpdate()
 		_animFrameCount = 0;
 	}
 
+	_blinkFrameCount--;
+	if (_blinkFrameCount <= 0) _blinkFrameCount = 0;
+
 	// 弾と当たったかどうか
 	Game::Rect rect = GetRect();
 	// 取得用
@@ -88,6 +91,9 @@ void Enemy01::RunUpdate()
 	{
 		_animFrameCount = 0;
 	}
+
+	_blinkFrameCount--;
+	if (_blinkFrameCount <= 0) _blinkFrameCount = 0;
 
 	// 弾と当たったかどうか
 	Game::Rect rect = GetRect();
@@ -175,6 +181,9 @@ void Enemy01::AirUpdate()
 	// 下降時
 	// アニメーションが1枚想定
 	_animFrameCount = 0;
+
+	_blinkFrameCount--;
+	if (_blinkFrameCount <= 0) _blinkFrameCount = 0;
 
 	// 弾と当たったかどうか
 	Game::Rect rect = GetRect();
@@ -474,6 +483,9 @@ void Enemy01::Update()
 
 void Enemy01::Draw(std::weak_ptr<GameSceneCamera> camera)
 {
+	int blinkTime = 4;
+	if (_blinkFrameCount % blinkTime * 2 >= blinkTime) return;
+
 	// グラフィックの切り出し位置(X座標)を計算する
 	int animNo = _animFrameCount / Enemy01Data::kSingleAnimFrame;
 
@@ -543,6 +555,7 @@ void Enemy01::OnDamage(int damage, bool isReverseX)
 	// 耐久力が0以下になったら非活性化
 	if (_hitPoint <= 0)
 	{
+		_blinkFrameCount = 0;
 		_vel.x = 0.0f;
 		_animFrameCount = 0;
 		_useHandle = _runHandle;
@@ -553,5 +566,9 @@ void Enemy01::OnDamage(int damage, bool isReverseX)
 		scoreController.AddScore(ScoreData::kEnemy01Score);
 
 		return;
+	}
+	else
+	{
+		if (_blinkFrameCount <= 0) _blinkFrameCount = 8;
 	}
 }

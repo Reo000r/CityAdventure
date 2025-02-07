@@ -3,11 +3,15 @@
 
 namespace GoalData
 {
+	
+#ifdef LOAD_DEBUG_STAGE
 	// 初期地点座標
-	//constexpr int kStartPosX = 512;
-	//constexpr int kStartPosY = 1024 + 8;
 	constexpr int kStartPosX = 72 * 32 * 2.0f;
-	constexpr int kStartPosY =  3 * 32 * 2.0f + 4 * 2.0f;
+	constexpr int kStartPosY = 3 * 32 * 2.0f + 4 * 2.0f;
+#else
+	constexpr int kStartPosX = 65 * 32 * 2.0f;
+	constexpr int kStartPosY = 33 * 32 * 2.0f + 4 * 2.0f;
+#endif // LOAD_DEBUG_STAGE
 
 	// 使用する画像の幅と高さ
 	constexpr int kGraphWidth  = 48;

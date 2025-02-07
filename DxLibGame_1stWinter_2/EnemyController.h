@@ -1,5 +1,6 @@
 #pragma once
 #include "Vector2.h"
+#include "Game.h"
 
 #include <vector>
 #include <memory>
@@ -76,6 +77,7 @@ private:
 		{ { 31,  35 }, false },
 		{ { 34,  35 }, false },
 
+#ifdef LOAD_DEBUG_STAGE
 		// 3,4
 		{ { 59,  35 }, true },
 		{ { 75,  34 }, true },
@@ -96,6 +98,7 @@ private:
 		{ { 84,  17 }, true },
 		{ { 92,  17 }, true },
 		{ { 88,  14 }, true },
+#endif // LOAD_DEBUG_STAGE
 	};
 
 	// 1 x11à»â∫ÇÕfalse
@@ -126,6 +129,7 @@ private:
 		{ { 41, 33 }, true },
 		{ { 32, 34 }, false },
 
+#ifdef LOAD_DEBUG_STAGE
 		// 3,4
 		{ { 54, 34 }, true },
 		{ { 57, 33 }, true },
@@ -159,13 +163,18 @@ private:
 		{ { 85, 16 }, true },
 		{ { 91, 15 }, true },
 		{ { 91, 11 }, true },
+#endif // LOAD_DEBUG_STAGE
 	};
 
 	// 1 x11à»â∫ÇÕfalse
 	std::vector<BossFlyEnemyData> _bossFlyEnemyData =
-	{  
+	{
+#ifdef LOAD_DEBUG_STAGE
 		{ { 61,  5 }, false },
 		{ { 83,  5 }, true },
+#else
+		{ { 65,  30 }, true },
+#endif // LOAD_DEBUG_STAGE
 	};
 
 	// ï‡Ç≠ìGÇä«óù

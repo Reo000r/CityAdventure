@@ -17,9 +17,12 @@ Map::Map() :
 {
 	PlatinumLoader& loader = PlatinumLoader::GetInstance();
 
-	//loader.Load(L"data/mapdata/stage1.fmf");
+#ifdef LOAD_DEBUG_STAGE
+	loader.Load(L"data/mapdata/stage1.fmf");
+#else
 	loader.Load(L"data/mapdata/stage.fmf");
-
+#endif // LOAD_DEBUG_STAGE
+	
 	int mapWidth = 0;
 	int mapHeight = 0;
 	// マップデータに置かれているチップが縦横にいくつ置かれているのかを取る

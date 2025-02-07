@@ -27,6 +27,9 @@ void BossEnemy::FlyUpdate()
 		_animFrameCount = 0;//BossEnemyData::kFlyAnimTotalFrame;
 	}
 
+	_blinkFrameCount--;
+	if (_blinkFrameCount <= 0) _blinkFrameCount = 0;
+
 	// 弾と当たったかどうか
 	Game::Rect rect = GetRect();
 	// 取得用
@@ -189,6 +192,8 @@ void BossEnemy::Update()
 
 void BossEnemy::Draw(std::weak_ptr<GameSceneCamera> camera)
 {
+	int blinkTime = 4;
+	if (_blinkFrameCount % blinkTime * 2 >= blinkTime) return;
 	// グラフィックの切り出し位置(X座標)を計算する
 	int animNo = _animFrameCount / BossEnemyData::kSingleAnimFrame;
 
@@ -269,6 +274,7 @@ void BossEnemy::OnDamage(int damage, bool isReverseX)
 	// 耐久力が0以下になったら非活性化
 	if (_hitPoint <= 0)
 	{
+		_blinkFrameCount = 0;
 		_vel.x = 0.0f;
 		_animFrameCount = 0;
 		_useHandle = _runHandle;
@@ -284,5 +290,9 @@ void BossEnemy::OnDamage(int damage, bool isReverseX)
 		_fallSpeed = fallSpeed;
 
 		return;
+	}
+	else
+	{
+		if (_blinkFrameCount <= 0) _blinkFrameCount = 8;
 	}
 }

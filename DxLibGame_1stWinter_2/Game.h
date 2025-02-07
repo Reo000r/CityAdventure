@@ -1,5 +1,8 @@
 #pragma once
 
+//#define LOAD_DEBUG_STAGE
+#define RELOAD_GAME_STAGE
+
 namespace Game
 {
 	constexpr int kScreenWidth = 1280;
