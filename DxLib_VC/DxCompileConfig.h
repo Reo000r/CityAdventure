@@ -2,7 +2,7 @@
 //
 //		ＤＸライブラリ　コンパイルコンフィグヘッダファイル
 //
-//				Ver 3.24d
+//				Ver 3.23 
 //
 // ----------------------------------------------------------------------------
 
@@ -47,9 +47,6 @@
 
 // ムービー機能がいらない方は次のコメントを外してください
 //#define DX_NON_MOVIE
-
-// Switch の MP4 再生機能がいらない方は次のコメントを外してください
-//#define DX_NON_NSW_MP4
 
 // ＴＧＡ画像の読み込み機能がいらない方は次のコメントを外してください
 //#define DX_NON_TGA
@@ -186,9 +183,6 @@
 // Live2D Cubism 4 関連の機能を使用しない場合は次のコメントを外してください
 //#define DX_NON_LIVE2D_CUBISM4
 
-// ウィンドウを作成しない場合は次のコメントを外してください
-//#define DX_NON_WINDOW
-
 #ifndef __cplusplus
 	#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 		#define DX_COMPILE_TYPE_C_LANGUAGE
@@ -263,23 +257,7 @@
 #define DX_NON_OPUS
 #define DX_NON_MODEL
 #define DX_NON_SHADERCODE_BINARY
-#define DX_NON_INPUTSTRING
 #endif
-
-#ifdef DX_NON_WINDOW
-	#ifndef DX_NON_GRAPHICS
-		#define DX_NON_GRAPHICS
-	#endif
-	#ifndef DX_NON_SOUND
-		#define DX_NON_SOUND
-	#endif
-	#ifndef DX_NON_INPUT
-		#define DX_NON_INPUT
-	#endif
-	#ifndef DX_NON_NETWORK
-		#define DX_NON_NETWORK
-	#endif
-#endif // DX_NON_WINDOW
 
 #ifdef DX_NON_GRAPHICS
 	#ifndef DX_NON_FONT
