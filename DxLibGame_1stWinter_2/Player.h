@@ -24,6 +24,8 @@ namespace PlayerData
 	// èâä˙ínì_ç¿ïW
 	constexpr int kStartPosX = 5  * 32 * 2.0f;
 	constexpr int kStartPosY = 35 * 32 * 2.0f;
+	//constexpr int kStartPosX = 45 * 32 * 2.0f;
+	//constexpr int kStartPosY = 34 * 32 * 2.0f;
 	//constexpr int kStartPosX = 72 * 32 * 2.0f;
 	//constexpr int kStartPosY =  6 * 32 * 2.0f;
 
