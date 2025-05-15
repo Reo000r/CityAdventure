@@ -1,0 +1,4 @@
+GityAdventure_動作確認環境
+
+OS  : Windows 11 Home
+GPU : NVIDIA GeForce RTX 3070
